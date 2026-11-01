@@ -1,6 +1,6 @@
 import { Badge, Icon, RingChart, toIconName, type Tone } from '../../components/ui';
 import type { GoalMonthSummary } from '../../domain/calc';
-import { formatMonthLabel, type MonthId } from '../../domain/dates';
+import { monthName, parseMonthId, type MonthId } from '../../domain/dates';
 import { formatPeso, type Centavos } from '../../domain/money';
 import type { Goal } from '../../domain/types';
 
@@ -27,9 +27,9 @@ export function GoalCard({ goal, balance, month, viewedMonth, onContribute, onOp
     : achieved
       ? { text: 'Target reached', tone: 'primary' }
       : queued
-        ? { text: `Starts ${formatMonthLabel(goal.startMonth)}`, tone: 'secondary' }
+        ? { text: `Starts ${monthName(parseMonthId(goal.startMonth).monthIndex, true)} ${parseMonthId(goal.startMonth).year}`, tone: 'secondary' }
         : dueThisMonth > 0
-          ? { text: `${formatPeso(dueThisMonth)} due this month`, tone: 'tertiary' }
+          ? { text: `${formatPeso(dueThisMonth)} due`, tone: 'tertiary' }
           : { text: `${formatPeso(goal.target - balance)} to go`, tone: 'neutral' };
 
   return (

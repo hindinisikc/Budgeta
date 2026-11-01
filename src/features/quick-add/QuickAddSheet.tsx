@@ -247,7 +247,7 @@ function Tile({ active, icon, label, sub, compact, onClick }: TileProps) {
       onClick={onClick}
       aria-pressed={active}
       className={cx(
-        'flex flex-col items-center justify-center gap-1 rounded-xl px-1.5 text-center transition-colors',
+        'flex flex-col items-center justify-center gap-1 rounded-xl px-2 text-center transition-colors',
         compact ? 'min-h-20 py-2' : 'min-h-24 py-2.5',
         active ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container',
       )}

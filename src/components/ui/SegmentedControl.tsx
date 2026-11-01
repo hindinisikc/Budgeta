@@ -23,7 +23,7 @@ export function SegmentedControl<T extends string>({ value, onChange, options, l
             aria-selected={active}
             onClick={() => onChange(o.value)}
             className={cx(
-              'min-h-10 min-w-11 flex-1 whitespace-nowrap rounded-lg px-2 text-sm font-semibold transition-colors sm:px-3.5',
+              'min-h-10 min-w-11 flex-auto whitespace-nowrap rounded-lg px-2 text-sm font-semibold transition-colors min-[380px]:px-3 sm:px-4',
               active ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface',
             )}
           >

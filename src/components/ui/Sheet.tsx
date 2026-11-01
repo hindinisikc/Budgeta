@@ -55,7 +55,7 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex min-h-11 items-center gap-1 rounded-full px-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full px-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
         >
           <Icon name="close" size={20} />
           {/* Icon-only on the narrowest phones so the title fits on one line; still announced as "Cancel". */}
