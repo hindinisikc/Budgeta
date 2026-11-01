@@ -41,6 +41,7 @@ import ic_volunteer_activism from '@material-symbols/svg-400/outlined/volunteer_
 import ic_medical_services from '@material-symbols/svg-400/outlined/medical_services.svg?raw';
 import ic_credit_card from '@material-symbols/svg-400/outlined/credit_card.svg?raw';
 import ic_category from '@material-symbols/svg-400/outlined/category.svg?raw';
+import ic_restore_from_trash from '@material-symbols/svg-400/outlined/restore_from_trash.svg?raw';
 import ic_spa from '@material-symbols/svg-400/outlined/spa.svg?raw';
 import ic_flag from '@material-symbols/svg-400/outlined/flag.svg?raw';
 import ic_remove from '@material-symbols/svg-400/outlined/remove.svg?raw';
@@ -126,6 +127,7 @@ export const icons = {
   medical_services: ic_medical_services,
   credit_card: ic_credit_card,
   category: ic_category,
+  restore_from_trash: ic_restore_from_trash,
   spa: ic_spa,
   flag: ic_flag,
   remove: ic_remove,

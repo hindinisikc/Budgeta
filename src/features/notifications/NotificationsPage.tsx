@@ -1,20 +1,25 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Badge, EmptyState, IconChip, PageHeading, SectionHeader } from '../../components/ui';
+import { Badge, Button, EmptyState, IconChip, PageHeading, SectionHeader } from '../../components/ui';
 import { useDueEntries, useLookups } from '../../db/hooks';
 import { formatShortDate } from '../../domain/dates';
 import { dueLabel, type DueEntry } from '../../domain/due';
 import { formatPeso } from '../../domain/money';
+import { useAction } from '../../state/useAction';
+import { useBackupNow, useBackupStatus } from '../backup/useBackup';
 import { DueEntrySheets } from '../budget/DueEntrySheets';
 
 /** In-app reminders: overdue bills, bills due soon, and expected income not yet received. */
 export function NotificationsPage() {
   const due = useDueEntries();
   const lookups = useLookups();
+  const backup = useBackupStatus();
+  const backupNow = useBackupNow();
+  const { busy, run } = useAction();
   const [open, setOpen] = useState(false);
   const [entry, setEntry] = useState<DueEntry | null>(null);
 
-  if (!due || !lookups) return <PageHeading title="Notifications" />;
+  if (!due || !lookups || !backup) return <PageHeading title="Notifications" />;
 
   const overdue = due.filter((d) => d.daysUntil < 0);
   const soon = due.filter((d) => d.daysUntil >= 0);
@@ -55,7 +60,20 @@ export function NotificationsPage() {
   return (
     <>
       <PageHeading title="Notifications" />
-      {due.length === 0 ? (
+      {backup.due && (
+        <section className="flex flex-col gap-3 rounded-xl bg-tertiary-fixed/60 p-4 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-headline text-base font-bold text-on-tertiary-fixed">Back up your data</p>
+            <p className="text-sm text-on-tertiary-fixed">
+              {backup.daysSince === null ? "You haven't saved a backup yet." : `Your last backup was ${backup.daysSince} days ago.`} Your data only lives on this device.
+            </p>
+          </div>
+          <Button icon="savings" disabled={busy} onClick={() => void run(backupNow)} className="shrink-0">
+            Back up now
+          </Button>
+        </section>
+      )}
+      {due.length === 0 && !backup.due ? (
         <EmptyState
           icon="check_circle"
           title="All caught up"
@@ -66,7 +84,7 @@ export function NotificationsPage() {
             </Link>
           }
         />
-      ) : (
+      ) : due.length === 0 ? null : (
         <div className="grid items-start gap-6 lg:grid-cols-2">
           {overdue.length > 0 && (
             <section className="min-w-0 space-y-2.5">

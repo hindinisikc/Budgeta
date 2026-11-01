@@ -1,13 +1,15 @@
 import { Link } from 'react-router';
 import { Icon } from '../ui';
 import { useDueEntries } from '../../db/hooks';
+import { useBackupStatus } from '../../features/backup/useBackup';
 import { Logo } from './Logo';
 import { MonthPicker } from './MonthPicker';
 
 export function Header() {
   const due = useDueEntries();
-  const count = due?.length ?? 0;
-  const urgent = due?.some((d) => d.daysUntil <= 0) ?? false;
+  const backup = useBackupStatus();
+  const count = (due?.length ?? 0) + (backup?.due ? 1 : 0);
+  const urgent = (due?.some((d) => d.daysUntil <= 0) ?? false) || !!backup?.due;
   return (
     <header className="pt-safe fixed inset-x-0 top-0 z-40 bg-surface/85 shadow-bar-bottom backdrop-blur-xl lg:left-64">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-2 px-4 lg:px-8">

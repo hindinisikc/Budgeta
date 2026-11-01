@@ -13,6 +13,9 @@ const root = createRoot(rootEl);
 // Open (and on first launch, seed) the local database before showing the app.
 db.open()
   .then(() => {
+    // Ask the browser not to evict our data under storage pressure (granted silently on most
+    // browsers once the app is installed or used often). Failure is harmless.
+    void navigator.storage?.persist?.().catch(() => undefined);
     root.render(
       <StrictMode>
         <App />
