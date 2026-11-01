@@ -33,10 +33,19 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Cache the app shell for offline use. Fonts: only the Latin subsets the app actually uses.
-        globPatterns: ['**/*.{js,css,html,svg,png}', '**/*latin*.woff2'],
-        navigateFallback: 'index.html',
+        // Cache code, styles, icons and the Latin font subsets for offline use. The page itself (HTML)
+        // is NOT precached: it's fetched fresh whenever online (see runtimeCaching), so host-side changes
+        // and new deploys show up immediately; the last copy is used only when offline.
+        globPatterns: ['**/*.{js,css,svg,png}', '**/*latin*.woff2'],
+        navigateFallback: null,
         cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: { cacheName: 'budgeta-pages', networkTimeoutSeconds: 4, expiration: { maxEntries: 5 } },
+          },
+        ],
       },
     }),
   ],
