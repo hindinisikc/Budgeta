@@ -79,7 +79,7 @@ export function RecurringPage() {
                           <IconChip icon={g.kind === 'income' ? 'payments' : toIconName(category?.icon ?? 'category')} size="sm" shape="rounded" />
                           <span className="min-w-0">
                             <span className="flex items-center gap-2">
-                              <span className="truncate font-headline text-sm font-semibold">{t.name}</span>
+                              <span className="break-words font-headline text-sm font-semibold">{t.name}</span>
                               {!t.active && <Badge>Paused</Badge>}
                             </span>
                             <span className="block truncate text-xs text-on-surface-variant">{details || category?.name || ' '}</span>

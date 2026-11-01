@@ -48,7 +48,7 @@ export function NotificationsPage() {
           </div>
           <div className="shrink-0 text-right">
             <p className="font-headline text-sm font-bold">{formatPeso(d.amount)}</p>
-            <button type="button" onClick={() => act(d)} className="inline-flex min-h-9 items-center text-xs font-bold text-primary hover:underline">
+            <button type="button" onClick={() => act(d)} className="inline-flex min-h-11 items-center text-xs font-bold text-primary hover:underline">
               {d.kind === 'income' ? 'Mark received' : d.autoPay ? 'Confirm paid' : 'Pay now'}
             </button>
           </div>

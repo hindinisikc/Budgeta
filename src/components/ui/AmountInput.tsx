@@ -37,7 +37,7 @@ export function AmountInput({ label, value, onChange, size = 'md', hint, autoFoc
           autoFocus={autoFocus}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.,]/g, ''))}
           className={cx(
-            'w-full min-w-0 bg-transparent pl-2 font-headline font-bold text-on-surface placeholder:text-outline focus:outline-none',
+            'w-full min-w-0 self-stretch bg-transparent pl-2 font-headline font-bold text-on-surface placeholder:text-outline focus:outline-none',
             large ? 'text-3xl' : 'text-lg',
           )}
         />

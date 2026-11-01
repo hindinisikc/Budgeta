@@ -54,11 +54,11 @@ export function TransactionRow({ tx, ctx, suffix, onClick }: TransactionRowProps
       <span className="flex min-w-0 items-center gap-3">
         <IconChip icon={d.icon} tone={d.tone} />
         <span className="min-w-0">
-          <span className="flex items-center gap-2">
-            <span className="truncate font-headline text-sm font-semibold">{tx.description || '(no description)'}</span>
-            {tx.type === 'expense' && !tx.budgetItemId && <Badge tone="tertiary">Unplanned</Badge>}
+          <span className="block truncate font-headline text-sm font-semibold">{tx.description || '(no description)'}</span>
+          <span className="flex min-w-0 items-center gap-1.5 text-xs text-on-surface-variant">
+            {tx.type === 'expense' && !tx.budgetItemId && <Badge tone="tertiary" className="shrink-0 py-0">Unplanned</Badge>}
+            <span className="truncate">{sub || ' '}</span>
           </span>
-          <span className="block truncate text-xs text-on-surface-variant">{sub || ' '}</span>
         </span>
       </span>
       <span className={cx('shrink-0 font-headline text-sm font-bold', d.amountTone)}>

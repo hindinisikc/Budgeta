@@ -41,7 +41,7 @@ export function IncomeSection({ summary, accountById, onAdd, onEdit, onReceive }
               const details = [s.income.expectedDate && formatShortDate(s.income.expectedDate), account?.name].filter(Boolean).join(' · ');
               return (
                 <li key={s.income.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <button type="button" onClick={() => onEdit(s)} className="flex min-w-0 items-center gap-3 text-left">
+                  <button type="button" onClick={() => onEdit(s)} className="flex min-h-11 min-w-0 items-center gap-3 text-left">
                     <IconChip icon={s.isReceived ? 'check_circle' : 'schedule'} tone={s.isReceived ? 'primary' : 'neutral'} size="sm" />
                     <span className="min-w-0">
                       <span className="block truncate font-headline text-sm font-semibold">{s.income.name}</span>
@@ -51,11 +51,11 @@ export function IncomeSection({ summary, accountById, onAdd, onEdit, onReceive }
                   <div className="shrink-0 text-right">
                     <p className="font-headline text-sm font-bold">{formatPeso(s.isReceived ? s.received : s.income.expected)}</p>
                     {s.isReceived ? (
-                      <button type="button" onClick={() => onReceive(s)} className="text-xs font-semibold text-primary">
+                      <button type="button" onClick={() => onReceive(s)} className="inline-flex min-h-11 items-center text-xs font-semibold text-primary">
                         {s.received === s.income.expected ? 'Received' : `Expected ${formatPeso(s.income.expected)}`}
                       </button>
                     ) : (
-                      <button type="button" onClick={() => onReceive(s)} className="inline-flex min-h-8 items-center text-xs font-bold text-primary hover:underline">
+                      <button type="button" onClick={() => onReceive(s)} className="inline-flex min-h-11 items-center text-xs font-bold text-primary hover:underline">
                         Mark received
                       </button>
                     )}

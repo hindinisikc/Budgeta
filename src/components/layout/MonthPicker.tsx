@@ -55,7 +55,7 @@ export function MonthPicker() {
         <div
           role="dialog"
           aria-label="Choose month"
-          className="absolute left-0 top-full z-50 mt-2 w-72 animate-fade-in rounded-xl bg-surface-container-lowest p-3 shadow-soft ring-1 ring-outline-variant/40"
+          className="absolute left-0 top-full z-50 mt-2 w-[min(18rem,calc(100vw-5rem))] animate-fade-in rounded-xl bg-surface-container-lowest p-3 shadow-soft ring-1 ring-outline-variant/40"
         >
           <div className="mb-2 flex items-center justify-between">
             <button type="button" aria-label="Previous year" onClick={() => setViewYear((y) => y - 1)} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface-container">

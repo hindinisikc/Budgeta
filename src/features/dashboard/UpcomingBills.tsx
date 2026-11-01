@@ -43,7 +43,7 @@ export function UpcomingBills({ summary, lookups, today, onPay }: UpcomingBillsP
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="font-headline text-sm font-bold">{formatPeso(b.amount)}</p>
-                  <button type="button" onClick={() => onPay(b)} className="inline-flex min-h-9 items-center text-xs font-bold text-primary hover:underline">
+                  <button type="button" onClick={() => onPay(b)} className="inline-flex min-h-11 items-center text-xs font-bold text-primary hover:underline">
                     {b.autoPay ? 'Confirm' : 'Pay Now'}
                   </button>
                 </div>

@@ -112,9 +112,10 @@ export function BudgetPage() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: 'all', label: `All (${summary.counts.total})` },
-                { value: 'unpaid', label: `Unpaid (${unpaidCount})` },
-                { value: 'paid', label: `Paid (${summary.counts.settled})` },
+                // Counts are dropped on the narrowest phones so the row fits next to the Add button.
+                { value: 'all', label: <>All<span className="max-[379px]:hidden"> ({summary.counts.total})</span></> },
+                { value: 'unpaid', label: <>Unpaid<span className="max-[379px]:hidden"> ({unpaidCount})</span></> },
+                { value: 'paid', label: <>Paid<span className="max-[379px]:hidden"> ({summary.counts.settled})</span></> },
               ]}
             />
             <Button icon="add" onClick={() => open({ kind: 'editItem', itemId: null })} className="shrink-0 rounded-full">

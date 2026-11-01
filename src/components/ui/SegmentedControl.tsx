@@ -1,9 +1,10 @@
+import type { ReactNode } from 'react';
 import { cx } from './cx';
 
 interface SegmentedControlProps<T extends string> {
   value: T;
   onChange: (value: T) => void;
-  options: Array<{ value: T; label: string }>;
+  options: Array<{ value: T; label: ReactNode }>;
   label: string;
   className?: string;
 }
@@ -22,7 +23,7 @@ export function SegmentedControl<T extends string>({ value, onChange, options, l
             aria-selected={active}
             onClick={() => onChange(o.value)}
             className={cx(
-              'min-h-10 flex-1 whitespace-nowrap rounded-lg px-3.5 text-sm font-semibold transition-colors',
+              'min-h-10 min-w-11 flex-1 whitespace-nowrap rounded-lg px-2 text-sm font-semibold transition-colors sm:px-3.5',
               active ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface',
             )}
           >

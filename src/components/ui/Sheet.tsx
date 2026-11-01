@@ -19,23 +19,23 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
   const ref = useRef<HTMLDialogElement>(null);
 
   // Layout effect: open/close the native dialog in the same frame React commits, so it never lags behind state.
+  // The page's own scrolling is deliberately left alone: locking it (overflow: hidden on <html>) makes
+  // iOS shift fixed layers by the scroll offset, pushing the sheet off-screen in the installed app.
   useLayoutEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     if (open && !dialog.open) {
       dialog.showModal();
-      document.documentElement.style.overflow = 'hidden';
+      dialog.focus(); // focus the sheet, not its first button, so no highlight ring appears on open
     } else if (!open && dialog.open) {
       dialog.close();
     }
-    return () => {
-      document.documentElement.style.overflow = '';
-    };
   }, [open]);
 
   return (
     <dialog
       ref={ref}
+      tabIndex={-1}
       aria-label={title}
       onCancel={(e) => {
         e.preventDefault();
@@ -45,7 +45,8 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
         // A click landing on the <dialog> itself (not its content) means the backdrop was tapped.
         if (e.target === e.currentTarget) onClose();
       }}
-      className="m-0 mt-auto max-h-[92dvh] w-full max-w-none overflow-hidden rounded-t-xl bg-surface p-0 text-on-surface shadow-bar-top backdrop:bg-on-surface/30 backdrop:animate-fade-in open:flex open:animate-sheet-up open:flex-col lg:m-auto lg:max-h-[85dvh] lg:w-[min(32rem,calc(100%-2rem))] lg:rounded-xl"
+      // Phones: pinned to the screen's bottom edge explicitly (no auto margins). Desktop: centred.
+      className="fixed inset-x-0 top-auto bottom-0 m-0 outline-none h-auto max-h-[92dvh] w-full max-w-none overflow-hidden rounded-t-xl bg-surface p-0 text-on-surface shadow-bar-top backdrop:bg-on-surface/30 backdrop:animate-fade-in open:flex open:animate-sheet-up open:flex-col lg:inset-0 lg:m-auto lg:h-fit lg:max-h-[85dvh] lg:w-[min(32rem,calc(100%-2rem))] lg:rounded-xl"
     >
       <div className="flex justify-center pt-2.5 lg:hidden">
         <span className="h-1.5 w-12 rounded-full bg-surface-variant" />
@@ -57,7 +58,8 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
           className="inline-flex min-h-11 items-center gap-1 rounded-full px-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
         >
           <Icon name="close" size={20} />
-          Cancel
+          {/* Icon-only on the narrowest phones so the title fits on one line; still announced as "Cancel". */}
+          <span className="max-[379px]:sr-only">Cancel</span>
         </button>
         <h2 className="flex items-center gap-2 font-headline text-lg font-bold">
           <span className="h-2 w-2 rounded-full bg-primary" />
@@ -65,7 +67,8 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
         </h2>
         <div className="flex min-w-[76px] justify-end">{headerAction}</div>
       </header>
-      <div className={footer ? 'flex-1 overflow-y-auto px-4 pb-4' : 'flex-1 overflow-y-auto px-4 pb-[max(env(safe-area-inset-bottom),1rem)]'}>
+      {/* overscroll-contain: scrolling the sheet never drags the page behind it. */}
+      <div className={footer ? 'min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4' : 'min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(env(safe-area-inset-bottom),1rem)]'}>
         {children}
       </div>
       {footer && <div className="border-t border-outline-variant/40 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-3">{footer}</div>}

@@ -39,7 +39,7 @@ export function GoalCard({ goal, balance, month, viewedMonth, onContribute, onOp
           {achieved || completed ? <Icon name="check" size={20} className="text-primary" /> : <Icon name={toIconName(goal.icon)} size={20} className="text-on-surface-variant" />}
         </RingChart>
         <span className="min-w-0">
-          <span className="block truncate font-headline text-base font-bold">{goal.name}</span>
+          <span className="block break-words font-headline text-base font-bold">{goal.name}</span>
           <span className="block text-sm text-on-surface-variant">
             {formatPeso(balance)} of {formatPeso(goal.target)}
           </span>
