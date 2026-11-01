@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+/* Mockups are reference only — keep their classes out of the build. */
+@source not "../../stitch_modern_personal_budget_tracker";
+
+/* Terra design tokens, ported from the Stitch mockup's Tailwind config. */
+@theme {
+  --color-primary: #4a7c59;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #78a886;
+  --color-on-primary-container: #d8f0de;
+  --color-primary-fixed: #c8e8d0;
+  --color-primary-fixed-dim: #8ecf9e;
+  --color-on-primary-fixed: #002110;
+  --color-on-primary-fixed-variant: #2a6038;
+  --color-inverse-primary: #8ecf9e;
+  --color-surface-tint: #4a7c59;
+
+  --color-secondary: #6b6358;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #f0e8db;
+  --color-on-secondary-container: #5e5548;
+  --color-secondary-fixed: #f0e8db;
+  --color-secondary-fixed-dim: #d4ccbf;
+  --color-on-secondary-fixed: #1e1a13;
+  --color-on-secondary-fixed-variant: #4a4538;
+
+  --color-tertiary: #705c30;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #c4a66a;
+  --color-on-tertiary-container: #554020;
+  --color-tertiary-fixed: #f8e0a8;
+  --color-tertiary-fixed-dim: #dcc48e;
+  --color-on-tertiary-fixed: #221a05;
+  --color-on-tertiary-fixed-variant: #554020;
+
+  --color-error: #b83230;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad8;
+  --color-on-error-container: #690005;
+
+  --color-background: #faf6f0;
+  --color-on-background: #2e3230;
+  --color-surface: #faf6f0;
+  --color-surface-bright: #faf6f0;
+  --color-surface-dim: #dbd7cf;
+  --color-on-surface: #2e3230;
+  --color-surface-variant: #e4e0d8;
+  --color-on-surface-variant: #4a4e4a;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f1ea;
+  --color-surface-container: #f0ece4;
+  --color-surface-container-high: #eae6de;
+  --color-surface-container-highest: #e4e0d8;
+  --color-inverse-surface: #2e3230;
+  --color-inverse-on-surface: #f5f0e8;
+  --color-outline: #74796e;
+  --color-outline-variant: #c4c8bc;
+
+  /* Chart series, in fixed order (validated: lightness, chroma, CVD & normal-vision separation, 3:1 on cards). */
+  --color-viz-1: #2f8a4f; /* forest green */
+  --color-viz-2: #3a6fc0; /* slate blue */
+  --color-viz-3: #a8740c; /* amber */
+  --color-viz-4: #b4475f; /* rose */
+  --color-viz-grid: #e4e0d8; /* hairlines, one step off the card surface */
+
+  --font-headline: "Literata Variable", Georgia, serif;
+  --font-body: "Nunito Sans Variable", system-ui, sans-serif;
+
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  --shadow-soft: 0 4px 20px rgba(46, 50, 48, 0.06);
+  --shadow-bar-top: 0 -4px 20px rgba(46, 50, 48, 0.06);
+  --shadow-bar-bottom: 0 1px 8px rgba(46, 50, 48, 0.05);
+  --shadow-fab: 0 6px 16px rgba(74, 124, 89, 0.35);
+
+  --animate-sheet-up: sheet-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-fade-in: fade-in 160ms ease-out;
+
+  @keyframes sheet-up {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-surface font-body text-on-surface antialiased;
+    line-height: 1.6;
+    overscroll-behavior-y: none;
+  }
+  ::selection {
+    @apply bg-primary-fixed text-on-primary-fixed;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+  button {
+    cursor: pointer;
+  }
+}

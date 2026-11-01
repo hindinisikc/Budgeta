@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,300..800;1,6..12,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'outline': '#74796e', 'primary': '#4a7c59', 'on-primary': '#ffffff', 'surface-tint': '#4a7c59', 'on-secondary-fixed': '#1e1a13', 'on-background': '#2e3230', 'secondary-fixed': '#f0e8db', 'on-primary-container': '#d8f0de', 'on-surface-variant': '#4a4e4a', 'surface-variant': '#e4e0d8', 'secondary': '#6b6358', 'inverse-on-surface': '#f5f0e8', 'primary-fixed': '#c8e8d0', 'error-container': '#ffdad8', 'surface-container-lowest': '#ffffff', 'on-tertiary': '#ffffff', 'surface-container': '#f0ece4', 'primary-fixed-dim': '#8ecf9e', 'on-error': '#ffffff', 'secondary-fixed-dim': '#d4ccbf', 'on-tertiary-fixed-variant': '#554020', 'inverse-surface': '#2e3230', 'on-primary-fixed': '#002110', 'outline-variant': '#c4c8bc', 'on-surface': '#2e3230', 'tertiary-fixed-dim': '#dcc48e', 'on-tertiary-fixed': '#221a05', 'tertiary-fixed': '#f8e0a8', 'surface': '#faf6f0', 'on-error-container': '#690005', 'background': '#faf6f0', 'on-tertiary-container': '#554020', 'surface-container-highest': '#e4e0d8', 'error': '#b83230', 'on-secondary': '#ffffff', 'surface-container-high': '#eae6de', 'secondary-container': '#f0e8db', 'inverse-primary': '#8ecf9e', 'on-secondary-fixed-variant': '#4a4538', 'on-secondary-container': '#5e5548', 'surface-dim': '#dbd7cf', 'tertiary-container': '#c4a66a', 'surface-container-low': '#f5f1ea', 'primary-container': '#78a886', 'on-primary-fixed-variant': '#2a6038', 'surface-bright': '#faf6f0', 'tertiary': '#705c30' }, borderRadius: { 'DEFAULT': '0.5rem', 'lg': '1rem', 'xl': '1.5rem', 'full': '9999px' }, spacing: {}, fontFamily: { 'headline': ['Literata'], 'display': ['Literata'], 'body': ['Nunito Sans'], 'label': ['Nunito Sans'] }, fontSize: {} } } }</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(46,50,48,0.05)]"><div class="h-16 px-4 flex items-center justify-between gap-2"><div class="flex items-center gap-2"><img alt="TrackPeso Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WBuNMToW7SwmrMoPCaDtjK1TTiqXAjlhSM7ONOisneKxxWoe8zqd-QbdTipcdWes4Uu1ysXs47ThA41k_vJHgqnwDgqZdvaR8BZKksk1kXZ1NLsHvQxhn0tX3l3u-YlTcphev6a2qDs5ykSDJe4_xNBdEMkbJkWgSXIlVUMnX5MEVxJQm169REjjTGg8Rn5mAsjfm0vBieUtYk4S9udsGZ_XrC8BffPlImjyiOXQ7B"/><span class="font-headline font-semibold text-base tracking-tight text-on-surface hidden xs:inline">TrackPeso</span><button class="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-xs font-semibold text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[16px] text-primary">calendar_today</span><span>October 2024</span><span class="material-symbols-outlined text-[14px] text-on-surface-variant">expand_more</span></button></div><div class="flex items-center gap-1"><span class="sr-only">Budget</span><button aria-label="Notifications" class="relative w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface"></span></button><button aria-label="User Profile" class="min-h-[44px] min-w-[44px] flex items-center justify-center p-0.5 rounded-full hover:opacity-90 transition-opacity" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1pJ9FhxgqzfEqEJVONM3N0v-toGOTDclcdtZIJuTvSi8ybaqqNBPTsJaTPFtjW0SU9tckgppReGsgtnWAWdJS8tWKFSkVWgrUVMs6Pj73vSrTyMlIBe2vnmFyxo5MwmVaW2KrvLLWY6LaTHgH5jrliRzUzx6E7MJSl6bBlMcziFNiP1obHWOhdez5cuDNXFS0P_li65AG-gysmXqmtMrX8BXwIInHjGU-9tGXZi0"/></button></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full px-4 space-y-4">
+<!-- Month Overview Header Card -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-low p-5 shadow-sm">
+<div class="flex items-center justify-between">
+<div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-[11px] font-bold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Active Period
+        </span>
+<h1 class="font-headline text-2xl font-bold text-on-surface mt-1.5">October 2024 Budget</h1>
+<p class="text-xs text-on-surface-variant font-medium">Replaces manual notebook ledger with live tracking</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[11px] font-semibold text-on-surface-variant">Completion</span>
+<div class="relative w-11 h-11 flex items-center justify-center mt-0.5">
+<svg class="w-11 h-11 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-highest" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute text-[11px] font-bold text-on-surface">60%</span>
+</div>
+</div>
+</div>
+<!-- Summary Strip -->
+<div class="grid grid-cols-3 gap-2 mt-4 pt-3.5 bg-surface-container rounded-lg p-3">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Planned</span>
+<span class="font-headline font-bold text-sm text-on-surface mt-0.5">₱64,000</span>
+<span class="text-[10px] text-on-surface-variant">9 bills</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-primary tracking-wider">Paid to Date</span>
+<span class="font-headline font-bold text-sm text-primary mt-0.5">₱38,420</span>
+<span class="text-[10px] text-primary/80">5 complete / 2 part</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-tertiary tracking-wider">Remaining</span>
+<span class="font-headline font-bold text-sm text-tertiary mt-0.5">₱25,580</span>
+<span class="text-[10px] text-tertiary/80">Need to settle</span>
+</div>
+</div>
+</div>
+<!-- Action Bar & Filter Tabs -->
+<div class="flex items-center justify-between gap-2">
+<div class="inline-flex p-1 bg-surface-container rounded-lg gap-1" id="filterContainer">
+<button class="filter-tab px-3 py-1.5 rounded text-xs font-bold transition-all bg-surface-container-lowest text-on-surface shadow-sm" data-filter="all" type="button">
+        All (9)
+      </button>
+<button class="filter-tab px-3 py-1.5 rounded text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all" data-filter="unpaid" type="button">
+        Unpaid (4)
+      </button>
+<button class="filter-tab px-3 py-1.5 rounded text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all" data-filter="paid" type="button">
+        Paid (5)
+      </button>
+</div>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-semibold shadow-sm hover:opacity-95 active:scale-95 transition-all" id="openAddModal" type="button">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+<span>Add Item</span>
+</button>
+</div>
+<!-- Checklist List Container -->
+<div class="space-y-3" id="budgetList">
+<!-- Item 1: Rent -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all" data-id="1" data-name="Rent" data-paid="0" data-planned="10000" data-status="unpaid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-transparent hover:text-primary-fixed-dim transition-colors" title="Mark as settled" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface">Rent</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container">
+                Due in 4 days
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-[11px] font-semibold">
+<span class="material-symbols-outlined text-xs">payments</span> Cash Withdrawal
+              </span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned</span>
+<span class="font-headline font-bold text-base text-on-surface">₱10,000</span>
+<span class="block text-[11px] text-error font-semibold mt-0.5">Paid: ₱0</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant italic">Full amount pending withdrawal</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-container" type="button">
+<span class="material-symbols-outlined text-sm">edit_calendar</span> Record Paid Amount
+        </button>
+</div>
+</div>
+<!-- Item 2: Grocery / School / Medicine -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all" data-id="2" data-name="Grocery / School / Medicine" data-paid="16400" data-planned="25000" data-status="unpaid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-tertiary-fixed text-tertiary flex items-center justify-center transition-colors" title="Partial completion" type="button">
+<span class="material-symbols-outlined text-base">timelapse</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface">Grocery / School / Medicine</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                In progress
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs text-primary">account_balance</span> BDO
+              </span>
+<span class="text-[11px] text-on-surface-variant">Remaining: ₱8,600</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned</span>
+<span class="font-headline font-bold text-base text-on-surface">₱25,000</span>
+<span class="block text-[11px] text-primary font-bold mt-0.5">Paid: ₱16,400</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<div class="w-1/2 bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 65.6%"></div>
+</div>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-container" type="button">
+<span class="material-symbols-outlined text-sm">edit</span> Edit / Pay More
+        </button>
+</div>
+</div>
+<!-- Item 3: Electricity -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all opacity-90" data-id="3" data-name="Electricity" data-paid="9650" data-planned="10000" data-status="paid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shadow-sm" title="Completed" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface line-through text-on-surface-variant">Electricity</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">
+                Paid
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs">phone_android</span> Maya
+              </span>
+<span class="text-[11px] text-primary font-medium">Saved ₱350 vs plan</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned: ₱10,000</span>
+<span class="font-headline font-bold text-base text-primary">₱9,650</span>
+<span class="block text-[10px] text-on-surface-variant">Settled Oct 12</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant">Receipt ref: #MY-8823</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-sm">edit</span> Adjust
+        </button>
+</div>
+</div>
+<!-- Item 4: Tuition -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all opacity-90" data-id="4" data-name="Tuition" data-paid="8000" data-planned="8000" data-status="paid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface line-through text-on-surface-variant">Tuition</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">
+                Paid
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-[11px] font-semibold">
+<span class="material-symbols-outlined text-xs">payments</span> Cash Withdrawal
+              </span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned: ₱8,000</span>
+<span class="font-headline font-bold text-base text-primary">₱8,000</span>
+<span class="block text-[10px] text-on-surface-variant">Settled Oct 05</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant">Dean's office slip filed</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-sm">edit</span> Adjust
+        </button>
+</div>
+</div>
+<!-- Item 5: Little Brother's Allowance -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all" data-id="5" data-name="Little Brother's Allowance" data-paid="2500" data-planned="5000" data-status="unpaid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-tertiary-fixed text-tertiary flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-base">timelapse</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface">Little Brother's Allowance</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                1st Cutoff Sent
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs text-primary">account_balance</span> BPI
+              </span>
+<span class="text-[11px] text-on-surface-variant">₱2,500 due on 30th</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned</span>
+<span class="font-headline font-bold text-base text-on-surface">₱5,000</span>
+<span class="block text-[11px] text-primary font-bold mt-0.5">Paid: ₱2,500</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<div class="w-1/2 bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 50%"></div>
+</div>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-container" type="button">
+<span class="material-symbols-outlined text-sm">send</span> Pay 2nd Cutoff
+        </button>
+</div>
+</div>
+<!-- Item 6: GLoan -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all" data-id="6" data-name="GLoan" data-paid="0" data-planned="2731" data-status="unpaid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-transparent hover:text-primary-fixed-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface">GLoan</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-surface-container text-on-surface-variant">
+                Auto-Debit
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant text-[11px] font-semibold">
+<span class="material-symbols-outlined text-xs">language</span> Online Payment
+              </span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned</span>
+<span class="font-headline font-bold text-base text-on-surface">₱2,731</span>
+<span class="block text-[11px] text-error font-semibold mt-0.5">Paid: ₱0</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant">Scheduled for Oct 25</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-container" type="button">
+<span class="material-symbols-outlined text-sm">payment</span> Record Paid Amount
+        </button>
+</div>
+</div>
+<!-- Item 7: Internet -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all" data-id="7" data-name="Internet" data-paid="0" data-planned="1799" data-status="unpaid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-transparent hover:text-primary-fixed-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface">Internet</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-surface-container text-on-surface-variant">
+                Fiber 100Mbps
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs">phone_android</span> Maya
+              </span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned</span>
+<span class="font-headline font-bold text-base text-on-surface">₱1,799</span>
+<span class="block text-[11px] text-error font-semibold mt-0.5">Paid: ₱0</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant">Due on Oct 28</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-container" type="button">
+<span class="material-symbols-outlined text-sm">payment</span> Record Paid Amount
+        </button>
+</div>
+</div>
+<!-- Item 8: Laundry -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all opacity-90" data-id="8" data-name="Laundry" data-paid="1200" data-planned="1500" data-status="paid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface line-through text-on-surface-variant">Laundry</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">
+                Paid
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-[11px] font-semibold">
+<span class="material-symbols-outlined text-xs">payments</span> Cash Withdrawal
+              </span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned: ₱1,500</span>
+<span class="font-headline font-bold text-base text-primary">₱1,200</span>
+<span class="block text-[10px] text-primary font-medium">Under budget</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant">Weekly wash bundle</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-sm">edit</span> Adjust
+        </button>
+</div>
+</div>
+<!-- Item 9: Credit Card (Variable) -->
+<div class="budget-card group relative bg-surface-container-low rounded-xl p-4 shadow-sm hover:shadow-md transition-all opacity-90" data-id="9" data-name="Credit Card (Variable)" data-paid="6500" data-planned="6500" data-status="paid">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<button class="check-toggle mt-0.5 w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-base text-on-surface line-through text-on-surface-variant">Credit Card (Variable)</h2>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">
+                Paid
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-[11px] font-bold">
+<span class="material-symbols-outlined text-xs text-primary">account_balance</span> BDO
+              </span>
+<span class="text-[11px] text-on-surface-variant">Statement balance clear</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-[11px] text-on-surface-variant">Planned: ₱6,500</span>
+<span class="font-headline font-bold text-base text-primary">₱6,500</span>
+<span class="block text-[10px] text-on-surface-variant">Settled Oct 14</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between bg-surface-container/60 rounded-lg px-3 py-1.5">
+<span class="text-[11px] text-on-surface-variant">Statement total paid in full</span>
+<button class="pay-btn inline-flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-sm">edit</span> Adjust
+        </button>
+</div>
+</div>
+</div>
+<!-- Bottom Secondary CTA -->
+<div class="pt-2 pb-4 flex flex-col items-center gap-2">
+<button class="w-full py-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.99]" id="bottomAddBtn" type="button">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+<span>+ Add Another Budget Item</span>
+</button>
+<p class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary">info</span>
+      Tip: Checking a bill allows entering the real disbursed amount to keep savings accurate.
+    </p>
+</div>
+<!-- Interactive Modal for Recording Paid Amount -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden flex items-center justify-center p-4" id="paymentModal">
+<div class="bg-surface-container-lowest w-full max-w-sm rounded-xl p-5 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-lg">wallet</span>
+</span>
+<h2 class="font-headline font-bold text-lg text-on-surface" id="modalTitle">Record Actual Paid</h2>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container" id="closeModal" type="button">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 space-y-1">
+<span class="text-xs text-on-surface-variant">Expense:</span>
+<p class="font-bold text-sm text-on-surface" id="modalExpenseName">Rent</p>
+<div class="flex justify-between text-xs pt-1 text-on-surface-variant">
+<span>Original planned:</span>
+<span class="font-bold text-on-surface" id="modalPlannedAmount">₱10,000</span>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider" for="actualPaidInput">
+          Actual Amount Paid (₱)
+        </label>
+<div class="relative flex items-center">
+<span class="absolute left-3 font-headline text-lg font-bold text-primary">₱</span>
+<input class="w-full pl-8 pr-3 py-2.5 rounded-lg bg-surface-container-low text-on-surface font-headline font-bold text-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all" id="actualPaidInput" placeholder="0" type="number"/>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-tight">
+          Enter what you actually paid. You don't have to pay the whole planned amount!
+        </p>
+</div>
+<div class="space-y-1.5">
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+          Payment Method
+        </label>
+<div class="grid grid-cols-3 gap-1.5 text-xs">
+<button class="method-chip py-1.5 px-2 rounded-lg bg-surface-container font-semibold text-on-surface text-center hover:bg-primary-fixed hover:text-on-primary-fixed" type="button">Cash</button>
+<button class="method-chip py-1.5 px-2 rounded-lg bg-surface-container font-semibold text-on-surface text-center hover:bg-primary-fixed hover:text-on-primary-fixed" type="button">Maya</button>
+<button class="method-chip py-1.5 px-2 rounded-lg bg-surface-container font-semibold text-on-surface text-center hover:bg-primary-fixed hover:text-on-primary-fixed" type="button">BDO</button>
+<button class="method-chip py-1.5 px-2 rounded-lg bg-surface-container font-semibold text-on-surface text-center hover:bg-primary-fixed hover:text-on-primary-fixed" type="button">BPI</button>
+<button class="method-chip py-1.5 px-2 rounded-lg bg-surface-container font-semibold text-on-surface text-center hover:bg-primary-fixed hover:text-on-primary-fixed" type="button">GCash</button>
+<button class="method-chip py-1.5 px-2 rounded-lg bg-surface-container font-semibold text-on-surface text-center hover:bg-primary-fixed hover:text-on-primary-fixed" type="button">Other</button>
+</div>
+</div>
+<div class="pt-2 flex gap-2">
+<button class="flex-1 py-2.5 rounded-lg bg-surface-container text-on-surface text-xs font-bold hover:bg-surface-container-high transition-colors" id="cancelModalBtn" type="button">
+          Cancel
+        </button>
+<button class="flex-1 py-2.5 rounded-lg bg-primary text-on-primary text-xs font-bold shadow-md hover:bg-primary-container hover:text-on-primary-container transition-all" id="savePaidBtn" type="button">
+          Save Record
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    let currentActiveCard = null;
+
+    // Filter switching logic
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const cards = document.querySelectorAll('.budget-card');
+
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        filterTabs.forEach(t => {
+          t.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+          t.classList.add('text-on-surface-variant');
+        });
+        tab.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+        tab.classList.remove('text-on-surface-variant');
+
+        const filter = tab.dataset.filter;
+        cards.forEach(card => {
+          if (filter === 'all') {
+            card.classList.remove('hidden');
+          } else if (filter === 'unpaid') {
+            card.classList.toggle('hidden', card.dataset.status !== 'unpaid');
+          } else if (filter === 'paid') {
+            card.classList.toggle('hidden', card.dataset.status !== 'paid');
+          }
+        });
+      });
+    });
+
+    // Checkbox click behavior: trigger record flow or fast toggle
+    const modal = document.getElementById('paymentModal');
+    const modalExpenseName = document.getElementById('modalExpenseName');
+    const modalPlannedAmount = document.getElementById('modalPlannedAmount');
+    const actualPaidInput = document.getElementById('actualPaidInput');
+
+    function openRecordModal(card) {
+      currentActiveCard = card;
+      modalExpenseName.textContent = card.dataset.name;
+      const planned = Number(card.dataset.planned).toLocaleString();
+      modalPlannedAmount.textContent = '₱' + planned;
+      actualPaidInput.value = card.dataset.paid && card.dataset.paid !== '0' ? card.dataset.paid : card.dataset.planned;
+      modal.classList.remove('hidden');
+      actualPaidInput.focus();
+    }
+
+    document.querySelectorAll('.pay-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const card = e.target.closest('.budget-card');
+        openRecordModal(card);
+      });
+    });
+
+    document.querySelectorAll('.check-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const card = e.target.closest('.budget-card');
+        if (card.dataset.status === 'paid') {
+          // Revert to unpaid
+          card.dataset.status = 'unpaid';
+          card.classList.remove('opacity-90');
+          const title = card.querySelector('h2');
+          title.classList.remove('line-through', 'text-on-surface-variant');
+          btn.className = 'check-toggle mt-0.5 w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-transparent hover:text-primary-fixed-dim transition-colors';
+          btn.innerHTML = '<span class="material-symbols-outlined text-lg font-bold">check</span>';
+        } else {
+          // When user marks paid, prompt for real disbursement as per UX design instruction
+          openRecordModal(card);
+        }
+      });
+    });
+
+    // Close Modal
+    function closeModal() {
+      modal.classList.add('hidden');
+      currentActiveCard = null;
+    }
+
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+
+    // Save Paid Record
+    document.getElementById('savePaidBtn').addEventListener('click', () => {
+      if (!currentActiveCard) return;
+      const paidVal = parseFloat(actualPaidInput.value) || 0;
+      currentActiveCard.dataset.paid = paidVal;
+      
+      if (paidVal > 0) {
+        currentActiveCard.dataset.status = 'paid';
+        currentActiveCard.classList.add('opacity-90');
+        const title = currentActiveCard.querySelector('h2');
+        title.classList.add('line-through', 'text-on-surface-variant');
+        
+        const btn = currentActiveCard.querySelector('.check-toggle');
+        btn.className = 'check-toggle mt-0.5 w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shadow-sm';
+        btn.innerHTML = '<span class="material-symbols-outlined text-lg font-bold">check</span>';
+      }
+      closeModal();
+    });
+
+    // Method selection highlights
+    document.querySelectorAll('.method-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.method-chip').forEach(c => c.classList.remove('bg-primary-fixed', 'text-on-primary-fixed'));
+        chip.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+      });
+    });
+
+    // Add item buttons triggering placeholder delight
+    function promptAdd() {
+      const name = prompt('Enter expense title (e.g. Water Bill, Gym):');
+      if (name) {
+        alert('Added "' + name + '" to October budget checklist!');
+      }
+    }
+    document.getElementById('openAddModal').addEventListener('click', promptAdd);
+    document.getElementById('bottomAddBtn').addEventListener('click', promptAdd);
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(46,50,48,0.06)]" data-active-classes="text-primary font-bold"><div class="relative flex items-center justify-around h-16 px-2"><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dashboard</span><span class="text-[11px] font-medium leading-none">Dashboard</span></a><a aria-current="page" class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 transition-colors text-primary font-bold" data-path="budget" href="#"><span class="material-symbols-outlined text-[22px]">account_balance_wallet</span><span class="text-[11px] font-medium leading-none">Budget</span></a><div class="flex-shrink-0 px-2"><a class="relative -top-5 flex items-center justify-center w-12 h-12 min-h-[48px] min-w-[48px] rounded-full bg-primary text-on-primary shadow-[0_6px_16px_rgba(74,124,89,0.35)] hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95" data-path="quick-add" href="#"><span class="material-symbols-outlined text-[28px]">add</span></a></div><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-on-surface transition-colors" data-path="savings" href="#"><span class="material-symbols-outlined text-[22px]">savings</span><span class="text-[11px] font-medium leading-none">Savings</span></a><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-on-surface transition-colors" data-path="activity" href="#"><span class="material-symbols-outlined text-[22px]">receipt_long</span><span class="text-[11px] font-medium leading-none">Activity</span></a></div></nav></body></html>
