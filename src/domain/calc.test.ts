@@ -108,6 +108,15 @@ describe('paying budget items', () => {
     expect(s.remainingToSettle).toBe(pesos(62500));
   });
 
+  it('a bill paid in full counts as settled even if never ticked; a pool does not', () => {
+    data.transactions.push(tx('expense', 10000, { budgetItemId: 'rent' }), tx('expense', 25000, { budgetItemId: 'grocery' }));
+    const s = summarizeMonth(data);
+    expect(s.items[0]).toMatchObject({ state: 'settled', remaining: 0 });
+    expect(s.items[1]).toMatchObject({ state: 'partial', remaining: 0 });
+    expect(s.counts.settled).toBe(1);
+    expect(s.margin).toBe(pesos(9000));
+  });
+
   it('multiple payments on one item add up (cutoffs)', () => {
     data.transactions.push(tx('expense', 2500, { budgetItemId: 'allowance' }), tx('expense', 2500, { budgetItemId: 'allowance' }));
     const a = summarizeItem(data.items[4]!, data.transactions);

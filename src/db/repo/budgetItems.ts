@@ -54,6 +54,17 @@ export async function setItemSettled(id: string, settled: boolean): Promise<void
   check(updated, 'That budget item no longer exists.');
 }
 
+/** Unticks an item: removes all its payments and reopens it, in one step. Returns how many were removed. */
+export async function markUnpaid(id: string): Promise<number> {
+  return db.transaction('rw', [db.budgetItems, db.transactions], async () => {
+    const item = await db.budgetItems.get(id);
+    check(item, 'That budget item no longer exists.');
+    const removed = await db.transactions.where('budgetItemId').equals(id).delete();
+    await db.budgetItems.update(id, { settled: false });
+    return removed;
+  });
+}
+
 /**
  * Applies a plan suggestion: sets this month's planned amount and, when the line comes from a recurring
  * item, that item's default too, so future months start with the better number.

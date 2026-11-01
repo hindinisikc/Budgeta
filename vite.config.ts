@@ -39,6 +39,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,svg,png}', '**/*latin*.woff2'],
         navigateFallback: null,
         cleanupOutdatedCaches: true,
+        // A new version takes over open pages immediately; src/state/autoUpdate.ts then reloads when idle.
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === 'navigate',

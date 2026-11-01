@@ -5,6 +5,7 @@ import '@fontsource-variable/nunito-sans';
 import './styles/theme.css';
 import { App } from './App';
 import { db } from './db/db';
+import { setupAutoUpdate } from './state/autoUpdate';
 
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Missing #root element');
@@ -16,6 +17,7 @@ db.open()
     // Ask the browser not to evict our data under storage pressure (granted silently on most
     // browsers once the app is installed or used often). Failure is harmless.
     void navigator.storage?.persist?.().catch(() => undefined);
+    setupAutoUpdate();
     root.render(
       <StrictMode>
         <App />

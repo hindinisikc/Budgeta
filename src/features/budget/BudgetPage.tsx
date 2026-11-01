@@ -5,7 +5,6 @@ import { Button, Icon, PageHeading, SegmentedControl } from '../../components/ui
 import { db } from '../../db/db';
 import { useLookups, useMonthRecords, useTemplates } from '../../db/hooks';
 import { reopenMonth } from '../../db/repo/months';
-import { setItemSettled } from '../../db/repo/budgetItems';
 import { summarizeMonth, type IncomeSummary, type ItemSummary } from '../../domain/calc';
 import { addMonths, formatMonthLabel, todayStr, type MonthId } from '../../domain/dates';
 import { formatPeso, sum } from '../../domain/money';
@@ -19,6 +18,7 @@ import { IncomeSection } from './IncomeSection';
 import { ItemEditorSheet } from './ItemEditorSheet';
 import { PaymentsSheet } from './PaymentsSheet';
 import { PlanSuggestions } from './PlanSuggestions';
+import { UnpaySheet } from './UnpaySheet';
 import { PayItemSheet, ReceiveIncomeSheet } from './MoneySheets';
 import { StartMonthCard } from './StartMonthCard';
 
@@ -32,7 +32,8 @@ type SheetState =
   | { kind: 'payments'; itemId: string }
   | { kind: 'editIncome'; incomeId: string | null }
   | { kind: 'receive'; incomeId: string }
-  | { kind: 'close' };
+  | { kind: 'close' }
+  | { kind: 'unpay'; itemId: string };
 
 export function BudgetPage() {
   const { selectedMonth } = useUi();
@@ -87,7 +88,7 @@ export function BudgetPage() {
   // Targets for each sheet, resolved from live data.
   const editItemId = lastSheet.kind === 'editItem' ? lastSheet.itemId : null;
   const editItem = itemSummary(editItemId);
-  const payTarget = itemSummary(lastSheet.kind === 'pay' || lastSheet.kind === 'payments' ? lastSheet.itemId : null);
+  const payTarget = itemSummary(lastSheet.kind === 'pay' || lastSheet.kind === 'payments' || lastSheet.kind === 'unpay' ? lastSheet.itemId : null);
   const incomeTarget = incomeSummary(lastSheet.kind === 'editIncome' || lastSheet.kind === 'receive' ? lastSheet.incomeId : null);
 
   return (
@@ -136,7 +137,7 @@ export function BudgetPage() {
                   account={s.item.accountId ? accountById.get(s.item.accountId) : undefined}
                   today={today}
                   dueSoonDays={settings.dueSoonDays}
-                  onCheck={() => (s.state === 'settled' ? void setItemSettled(s.item.id, false) : open({ kind: 'pay', itemId: s.item.id }))}
+                  onCheck={() => open(s.state === 'settled' ? { kind: 'unpay', itemId: s.item.id } : { kind: 'pay', itemId: s.item.id })}
                   onOpen={() => open({ kind: 'payments', itemId: s.item.id })}
                 />
               ))}
@@ -189,6 +190,8 @@ export function BudgetPage() {
         }}
         accounts={accounts}
       />
+
+      <UnpaySheet open={sheet.kind === 'unpay'} onClose={close} target={payTarget} paymentCount={payTarget ? paymentsOf(payTarget.item.id).length : 0} />
 
       <CloseMonthSheet open={sheet.kind === 'close'} onClose={close} monthId={selectedMonth} margin={summary.margin} goals={goals} />
 

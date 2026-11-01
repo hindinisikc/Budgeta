@@ -38,8 +38,11 @@ export interface ItemSummary {
 export function summarizeItem(item: BudgetItem, transactions: Transaction[]): ItemSummary {
   const payments = transactions.filter((t) => t.type === 'expense' && t.budgetItemId === item.id);
   const paid = sum(payments.map((t) => t.amount));
-  const remaining = item.settled ? 0 : Math.max(item.planned - paid, 0);
-  const committed = item.settled ? paid : Math.max(item.planned, paid);
+  // A bill paid in full is done even if it was never ticked. Pools stay open until settled explicitly,
+  // since more purchases can still come in. (Money figures are identical either way when paid ≥ planned.)
+  const settled = item.settled || (item.kind === 'bill' && item.planned > 0 && paid >= item.planned);
+  const remaining = settled ? 0 : Math.max(item.planned - paid, 0);
+  const committed = settled ? paid : Math.max(item.planned, paid);
   const lastPaymentDate = payments.reduce<string | null>((latest, t) => (latest === null || t.date > latest ? t.date : latest), null);
   return {
     item,
@@ -47,9 +50,9 @@ export function summarizeItem(item: BudgetItem, transactions: Transaction[]): It
     remaining,
     committed,
     overspent: Math.max(paid - item.planned, 0),
-    underspent: item.settled ? Math.max(item.planned - paid, 0) : 0,
+    underspent: settled ? Math.max(item.planned - paid, 0) : 0,
     progress: item.planned > 0 ? paid / item.planned : paid > 0 ? 1 : 0,
-    state: item.settled ? 'settled' : paid > 0 ? 'partial' : 'unpaid',
+    state: settled ? 'settled' : paid > 0 ? 'partial' : 'unpaid',
     lastPaymentDate,
   };
 }

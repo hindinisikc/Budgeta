@@ -32,6 +32,20 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
     }
   }, [open]);
 
+  // Freeze the page behind the sheet. Pinning <body> (instead of overflow: hidden on <html>) keeps
+  // iOS from shifting the sheet; the scroll position is restored when the sheet closes.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const y = window.scrollY;
+    const body = document.body.style;
+    const previous = { position: body.position, top: body.top, left: body.left, right: body.right };
+    Object.assign(body, { position: 'fixed', top: `-${y}px`, left: '0', right: '0' });
+    return () => {
+      Object.assign(body, previous);
+      window.scrollTo(0, y);
+    };
+  }, [open]);
+
   return (
     <dialog
       ref={ref}
@@ -46,7 +60,7 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
         if (e.target === e.currentTarget) onClose();
       }}
       // Phones: pinned to the screen's bottom edge explicitly (no auto margins). Desktop: centred.
-      className="fixed inset-x-0 top-auto bottom-0 m-0 outline-none h-auto max-h-[92dvh] w-full max-w-none overflow-hidden rounded-t-xl bg-surface p-0 text-on-surface shadow-bar-top backdrop:bg-on-surface/30 backdrop:animate-fade-in open:flex open:animate-sheet-up open:flex-col lg:inset-0 lg:m-auto lg:h-fit lg:max-h-[85dvh] lg:w-[min(32rem,calc(100%-2rem))] lg:rounded-xl"
+      className="fixed inset-x-0 top-auto bottom-0 m-0 touch-none outline-none h-auto max-h-[92dvh] w-full max-w-none overflow-hidden rounded-t-xl bg-surface p-0 text-on-surface shadow-bar-top backdrop:bg-on-surface/30 backdrop:animate-fade-in open:flex open:animate-sheet-up open:flex-col lg:inset-0 lg:m-auto lg:h-fit lg:max-h-[85dvh] lg:w-[min(32rem,calc(100%-2rem))] lg:rounded-xl"
     >
       <div className="flex justify-center pt-2.5 lg:hidden">
         <span className="h-1.5 w-12 rounded-full bg-surface-variant" />
@@ -67,8 +81,8 @@ export function Sheet({ open, onClose, title, headerAction, footer, children }: 
         </h2>
         <div className="flex min-w-[76px] justify-end">{headerAction}</div>
       </header>
-      {/* overscroll-contain: scrolling the sheet never drags the page behind it. */}
-      <div className={footer ? 'min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4' : 'min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(env(safe-area-inset-bottom),1rem)]'}>
+      {/* Only this area responds to drags; overscroll-contain stops it pulling the page behind. */}
+      <div className={footer ? 'min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-4 pb-4' : 'min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-4 pb-[max(env(safe-area-inset-bottom),1rem)]'}>
         {children}
       </div>
       {footer && <div className="border-t border-outline-variant/40 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-3">{footer}</div>}

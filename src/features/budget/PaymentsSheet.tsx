@@ -76,9 +76,11 @@ export function PaymentsSheet({ open, onClose, summary, payments, accountById, o
           <Button variant="secondary" icon="edit" onClick={onEdit}>
             Edit item
           </Button>
-          <Button variant="tonal" icon={item.settled ? 'lock_open' : 'check'} disabled={busy} onClick={() => void run(() => setItemSettled(item.id, !item.settled))}>
-            {item.settled ? 'Reopen' : 'Mark settled'}
-          </Button>
+          {(item.kind === 'flexible' || summary.paid < item.planned) && (
+            <Button variant="tonal" icon={item.settled ? 'lock_open' : 'check'} disabled={busy} onClick={() => void run(() => setItemSettled(item.id, !item.settled))}>
+              {item.settled ? 'Reopen' : 'Mark settled'}
+            </Button>
+          )}
         </div>
       </div>
     </Sheet>

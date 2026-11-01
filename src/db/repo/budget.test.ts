@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../db';
 import { summarizeMonth } from '../../domain/calc';
 import { pesos } from '../../domain/money';
-import { addItem, deleteItem, setItemSettled, updateItem, type ItemInput } from './budgetItems';
+import { addItem, deleteItem, markUnpaid, setItemSettled, updateItem, type ItemInput } from './budgetItems';
 import { addIncome, deleteIncome } from './incomeItems';
 import { startMonth } from './months';
 import { addTemplate, type TemplateInput } from './templates';
@@ -142,6 +142,15 @@ describe('budget items', () => {
     const s = await monthSummary();
     expect(s.unplannedSpent).toBe(pesos(200));
     expect(s.plannedExpenses).toBe(0);
+  });
+
+  it('marking unpaid removes the payments and reopens the item', async () => {
+    const id = await addItem(M, itemInput());
+    await recordPayment(id, { amount: pesos(10000), date: `${M}-01`, accountId: cash, note: '', settle: true });
+    expect(await markUnpaid(id)).toBe(1);
+    const s = await monthSummary();
+    expect(s.items[0]).toMatchObject({ state: 'unpaid', paid: 0, remaining: pesos(10000) });
+    expect(s.paidToDate).toBe(0);
   });
 
   it('deleting a payment restores the remaining amount', async () => {
