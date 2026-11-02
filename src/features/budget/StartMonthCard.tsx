@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
 import { Button, EmptyState, FormError } from '../../components/ui';
 import { startMonth } from '../../db/repo/months';
-import { formatMonthLabel, type MonthId } from '../../domain/dates';
+import { addMonths, formatMonthLabel, monthName, parseMonthId, type MonthId } from '../../domain/dates';
 import type { Template } from '../../domain/types';
 import { useAction } from '../../state/useAction';
+import { useLookups } from '../../db/hooks';
 
 interface StartMonthCardProps {
   monthId: MonthId;
@@ -13,6 +14,8 @@ interface StartMonthCardProps {
 /** Shown when the selected month hasn't been started yet. */
 export function StartMonthCard({ monthId, templates }: StartMonthCardProps) {
   const { busy, error, run } = useAction();
+  const aheadMode = useLookups()?.settings.incomeTiming === 'next-month';
+  const prevName = monthName(parseMonthId(addMonths(monthId, -1)).monthIndex);
   const active = templates.filter((t) => t.active);
   const bills = active.filter((t) => t.kind === 'bill').length;
   const pools = active.filter((t) => t.kind === 'flexible').length;
@@ -31,9 +34,10 @@ export function StartMonthCard({ monthId, templates }: StartMonthCardProps) {
         icon="event_repeat"
         title={`Start ${formatMonthLabel(monthId)}`}
         message={
-          active.length > 0
+          (active.length > 0
             ? `Your recurring list will add ${parts.join(', ')}. You can adjust any amount afterwards.`
-            : 'You have no recurring items yet. Set them up once (rent, bills, salary) and every new month starts pre-filled.'
+            : 'You have no recurring items yet. Set them up once (rent, bills, salary) and every new month starts pre-filled.') +
+          (aheadMode ? ` This month will run on ${prevName}'s paydays.` : '')
         }
         action={
           <div className="flex flex-col gap-2 sm:flex-row">

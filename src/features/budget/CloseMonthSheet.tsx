@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { Button, FormError, Icon, SelectField, Sheet, cx } from '../../components/ui';
-import { closeMonth } from '../../db/repo/months';
+import { closeMonth, isSwitchMonth } from '../../db/repo/months';
 import { addMonths, daysLeftInMonth, formatMonthLabel, todayStr, type MonthId } from '../../domain/dates';
 import { formatPeso, type Centavos } from '../../domain/money';
 import type { Goal } from '../../domain/types';
@@ -27,17 +28,32 @@ export function CloseMonthSheet({ open, onClose, monthId, margin, goals }: Close
   const leftover = Math.max(margin, 0);
   const next = formatMonthLabel(addMonths(monthId, 1));
   const daysLeft = daysLeftInMonth(monthId, todayStr());
+  const nextName = next.split(' ')[0];
+  // The switch month into "one month ahead": next month already runs on this month's paydays, so this
+  // month's "leftover" is that same money — it can only be left as is.
+  const switchMonth = useLiveQuery(() => isSwitchMonth(monthId), [monthId]) ?? false;
+  const switchText = `Not this month: ${nextName} already runs on this month's paydays, so it would count twice. Put any truly extra money into savings from the Savings screen.`;
 
   useEffect(() => {
     if (!open) return;
-    setChoice(activeGoals.length > 0 ? 'goal' : 'carryover');
+    setChoice(switchMonth ? 'leave' : activeGoals.length > 0 ? 'goal' : 'carryover');
     setGoalId(activeGoals[0]?.id ?? '');
     setError(null);
   }, [open]);
 
-  const options: Array<{ value: Choice; title: string; text: string; disabled?: boolean }> = [
-    { value: 'goal', title: 'Move it to a savings goal', text: 'Recorded as a contribution on the last day of the month.', disabled: activeGoals.length === 0 },
-    { value: 'carryover', title: `Carry it over to ${next}`, text: `Added as "Carried over" income in ${next}.` },
+  const options: Array<{ value: Choice; title: string; text: string; disabledText?: string }> = [
+    {
+      value: 'goal',
+      title: 'Move it to a savings goal',
+      text: 'Recorded as a contribution on the last day of the month.',
+      disabledText: switchMonth ? switchText : activeGoals.length === 0 ? 'Add a savings goal first.' : undefined,
+    },
+    {
+      value: 'carryover',
+      title: `Carry it over to ${next}`,
+      text: `Added as "Carried over" income in ${next}.`,
+      disabledText: switchMonth ? switchText : undefined,
+    },
     { value: 'leave', title: 'Leave it', text: 'Nothing moves; the month just closes.' },
   ];
 
@@ -91,13 +107,13 @@ export function CloseMonthSheet({ open, onClose, monthId, margin, goals }: Close
                 className={cx(
                   'flex cursor-pointer items-start gap-3 rounded-xl p-3.5 ring-1 transition-colors',
                   choice === o.value ? 'bg-primary-fixed/50 ring-primary' : 'bg-surface-container-low ring-transparent',
-                  o.disabled && 'cursor-not-allowed opacity-50',
+                  o.disabledText && 'cursor-not-allowed opacity-60',
                 )}
               >
-                <input type="radio" name="close-choice" className="mt-1 accent-primary" checked={choice === o.value} disabled={o.disabled} onChange={() => setChoice(o.value)} />
+                <input type="radio" name="close-choice" className="mt-1 accent-primary" checked={choice === o.value} disabled={!!o.disabledText} onChange={() => setChoice(o.value)} />
                 <span>
                   <span className="block font-semibold">{o.title}</span>
-                  <span className="block text-sm text-on-surface-variant">{o.disabled ? 'Add a savings goal first.' : o.text}</span>
+                  <span className="block text-sm text-on-surface-variant">{o.disabledText ?? o.text}</span>
                 </span>
               </label>
             ))}

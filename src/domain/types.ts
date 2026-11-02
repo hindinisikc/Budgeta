@@ -14,6 +14,11 @@ export interface Settings {
   lastBackupAt: Timestamp | null;
   /** Budget-item ids whose "adjust your plan" suggestion was dismissed. */
   dismissedSuggestions?: string[];
+  /**
+   * 'next-month' = "live one month ahead": each payday funds the following month. Applies to months
+   * started while it's on (stored on each Month as fundedBy), so past months never change meaning.
+   */
+  incomeTiming?: 'same-month' | 'next-month';
 }
 
 export interface Category {
@@ -60,6 +65,8 @@ export interface Month {
   createdAt: Timestamp;
   closedAt: Timestamp | null;
   closeResolution: CloseResolution | null;
+  /** 'previous-month': this month runs on last month's paydays; its own paydays fund next month. */
+  fundedBy?: 'previous-month';
 }
 
 /** A planned expense line for one month: a single bill or a flexible spending pool. */
@@ -89,7 +96,11 @@ export interface IncomeItem {
   expected: Centavos;
   expectedDate: DateStr | null;
   accountId: Id | null;
-  source: 'regular' | 'carryover';
+  /**
+   * regular = a payday. carryover = leftover moved from last month. opening = other money already in hand
+   * for this month. In "one month ahead" months only carryover/opening lines fund the month itself.
+   */
+  source: 'regular' | 'carryover' | 'opening';
   order: number;
 }
 

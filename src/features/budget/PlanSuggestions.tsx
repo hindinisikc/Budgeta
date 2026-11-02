@@ -2,7 +2,7 @@ import { Icon } from '../../components/ui';
 import { useLookups, useMonthRange } from '../../db/hooks';
 import { applyPlanSuggestion } from '../../db/repo/budgetItems';
 import { dismissSuggestion } from '../../db/repo/settings';
-import { addMonths, type MonthId } from '../../domain/dates';
+import { addMonths, currentMonthId, type MonthId } from '../../domain/dates';
 import { formatPeso } from '../../domain/money';
 import { planSuggestions } from '../../domain/suggestions';
 import type { BudgetItem } from '../../domain/types';
@@ -20,7 +20,9 @@ export function PlanSuggestions({ monthId, items }: PlanSuggestionsProps) {
   const past = useMonthRange(addMonths(monthId, -1), 3);
   if (!past || !lookups) return null;
 
-  const history = past.filter((p) => p.started).reverse().map((p) => p.summary.items);
+  // Only finished months teach anything: a month still in progress (or not fully tracked yet) would drag averages down.
+  const thisMonth = currentMonthId();
+  const history = past.filter((p) => p.started && p.monthId < thisMonth).reverse().map((p) => p.summary.items);
   const dismissed = new Set(lookups.settings.dismissedSuggestions ?? []);
   const suggestions = planSuggestions(items, history).filter((s) => !dismissed.has(s.itemId)).slice(0, 3);
   if (suggestions.length === 0) return null;

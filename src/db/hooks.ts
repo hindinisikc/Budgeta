@@ -1,8 +1,9 @@
 /** Live (auto-refreshing) reads. Components re-render whenever the underlying records change. */
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db';
+import { fundingFor } from './funding';
 import { DEFAULT_SETTINGS } from './seed';
-import { summarizeMonth, type MonthSummary } from '../domain/calc';
+import { summarizeMonth, type Funding, type MonthSummary } from '../domain/calc';
 import { addMonths, monthOf, todayStr, type MonthId } from '../domain/dates';
 import { dueEntries, type DueEntry } from '../domain/due';
 import type { Account, BudgetItem, Category, GoalPlan, IncomeItem, Month, Settings, Template, Transaction } from '../domain/types';
@@ -15,6 +16,8 @@ export interface MonthRecords {
   incomeItems: IncomeItem[];
   goalPlans: GoalPlan[];
   transactions: Transaction[];
+  /** One month ahead: last month's paydays this month runs on (null for normal months). */
+  funding: Funding | null;
 }
 
 /** Everything belonging to one month. `undefined` while loading. */
@@ -27,7 +30,8 @@ export function useMonthRecords(monthId: MonthId): MonthRecords | undefined {
       db.goalPlans.where('monthId').equals(monthId).toArray(),
       db.transactions.where('monthId').equals(monthId).toArray(),
     ]);
-    return { month, items: items.sort(byOrder), incomeItems: incomeItems.sort(byOrder), goalPlans, transactions };
+    const funding = await fundingFor(month);
+    return { month, items: items.sort(byOrder), incomeItems: incomeItems.sort(byOrder), goalPlans, transactions, funding };
   }, [monthId]);
 }
 
@@ -105,10 +109,12 @@ export function useMonthRange(endMonth: MonthId, count: number): MonthPoint[] | 
       db.goalPlans.where('monthId').between(start, endMonth, true, true).toArray(),
       db.transactions.where('monthId').between(start, endMonth, true, true).toArray(),
     ]);
-    return months.map((m) => ({
+    const fundings = await Promise.all(months.map((m) => fundingFor(monthRows.find((r) => r.id === m))));
+    return months.map((m, i) => ({
       monthId: m,
       started: monthRows.some((r) => r.id === m),
       summary: summarizeMonth({
+        funding: fundings[i],
         items: items.filter((i) => i.monthId === m),
         incomeItems: incomeItems.filter((i) => i.monthId === m),
         goalPlans: goalPlans.filter((p) => p.monthId === m),

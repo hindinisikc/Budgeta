@@ -4,7 +4,19 @@
  * transaction can't leave a stale total behind.
  */
 import { sum, type Centavos } from './money';
+import type { MonthId } from './dates';
 import type { BudgetItem, GoalPlan, Id, IncomeItem, Transaction } from './types';
+
+/** What a "one month ahead" month runs on: last month's paydays. */
+export interface Funding {
+  fromMonth: MonthId;
+  /** Σ expected of last month's paydays. */
+  expected: Centavos;
+  /** Σ actually received from them so far. */
+  received: Centavos;
+  /** The amount this month runs on: actual for paydays received, expected for the rest. */
+  funds: Centavos;
+}
 
 export interface MonthData {
   items: BudgetItem[];
@@ -12,6 +24,8 @@ export interface MonthData {
   goalPlans: GoalPlan[];
   /** Transactions dated in this month. */
   transactions: Transaction[];
+  /** Present only for months funded by the previous month's paydays. */
+  funding?: Funding | null;
 }
 
 // ---- Budget items -----------------------------------------------------------
@@ -74,6 +88,17 @@ export function summarizeIncome(income: IncomeItem, transactions: Transaction[])
   return { income, received, funds: isReceived ? received : income.expected, isReceived };
 }
 
+/** Last month's paydays, as the funding for a "one month ahead" month. Extra one-off income stays in its own month. */
+export function earningsFunding(fromMonth: MonthId, incomeItems: IncomeItem[], transactions: Transaction[]): Funding {
+  const paydays = incomeItems.filter((i) => i.source === 'regular').map((i) => summarizeIncome(i, transactions));
+  return {
+    fromMonth,
+    expected: sum(paydays.map((s) => s.income.expected)),
+    received: sum(paydays.map((s) => s.received)),
+    funds: sum(paydays.map((s) => s.funds)),
+  };
+}
+
 // ---- Savings ----------------------------------------------------------------
 
 export interface GoalMonthSummary {
@@ -123,7 +148,7 @@ export interface MonthSummary {
   income: IncomeSummary[];
   goals: GoalMonthSummary[];
 
-  /** Σ expected income lines. */
+  /** Money this month is planned on: Σ expected income lines, or (one month ahead) last month's paydays + money in hand. */
   plannedIncome: Centavos;
   /** Σ planned budget items. */
   plannedExpenses: Centavos;
@@ -164,14 +189,24 @@ export interface MonthSummary {
   /** paidToDate / plannedExpenses, clamped to 0..1. */
   completion: number;
   counts: { total: number; settled: number; partial: number; unpaid: number };
+
+  /** One month ahead: what this month runs on (null for normal months). */
+  funding: Funding | null;
+  /** One month ahead: this month's paydays, which fund next month (null for normal months). */
+  earnings: { expected: Centavos; received: Centavos } | null;
 }
 
-export function summarizeMonth({ items, incomeItems, goalPlans, transactions }: MonthData): MonthSummary {
+export function summarizeMonth({ items, incomeItems, goalPlans, transactions, funding = null }: MonthData): MonthSummary {
   const itemSummaries = items.map((i) => summarizeItem(i, transactions));
   const incomeSummaries = incomeItems.map((i) => summarizeIncome(i, transactions));
   const goalSummaries = summarizeGoalsForMonth(goalPlans, transactions);
 
-  const plannedIncome = sum(incomeItems.map((i) => i.expected));
+  // One month ahead: this month's paydays are earnings for next month, so only money already in hand
+  // (last month's paydays, carry-over/opening lines, extra income, withdrawals) funds this month.
+  const countsNow = (i: IncomeItem) => !funding || i.source !== 'regular';
+  const nowLines = incomeSummaries.filter((s) => countsNow(s.income));
+  const paydays = funding ? incomeSummaries.filter((s) => !countsNow(s.income)) : [];
+  const plannedIncome = (funding?.funds ?? 0) + sum(nowLines.map((s) => s.income.expected));
   const plannedExpenses = sum(items.map((i) => i.planned));
   const savingsTarget = sum(goalPlans.map((p) => p.planned));
 
@@ -179,7 +214,7 @@ export function summarizeMonth({ items, incomeItems, goalPlans, transactions }: 
   const extraIncome = sum(incomeTx.filter((t) => !t.incomeItemId).map((t) => t.amount));
   const incomeReceived = sum(incomeTx.map((t) => t.amount));
   const withdrawals = sum(transactions.filter((t) => t.type === 'withdrawal').map((t) => t.amount));
-  const availableFunds = sum(incomeSummaries.map((s) => s.funds)) + extraIncome + withdrawals;
+  const availableFunds = (funding?.funds ?? 0) + sum(nowLines.map((s) => s.funds)) + extraIncome + withdrawals;
 
   const expenses = transactions.filter((t) => t.type === 'expense');
   const spentToDate = sum(expenses.map((t) => t.amount));
@@ -222,6 +257,8 @@ export function summarizeMonth({ items, incomeItems, goalPlans, transactions }: 
       partial: itemSummaries.filter((s) => s.state === 'partial').length,
       unpaid: itemSummaries.filter((s) => s.state === 'unpaid').length,
     },
+    funding,
+    earnings: funding ? { expected: sum(paydays.map((s) => s.income.expected)), received: sum(paydays.map((s) => s.received)) } : null,
   };
 }
 

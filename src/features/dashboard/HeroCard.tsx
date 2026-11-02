@@ -12,7 +12,8 @@ interface HeroCardProps {
 /** The one number that matters (safe to spend), a single spending ring, and spent / remaining. */
 export function HeroCard({ monthId, summary, today }: HeroCardProps) {
   const daysLeft = daysLeftInMonth(monthId, today);
-  const pace = dailySafePace(summary, daysLeft);
+  const rawPace = dailySafePace(summary, daysLeft);
+  const pace = rawPace === null ? null : Math.floor(rawPace / 100) * 100; // whole pesos: centavos are noise here
   const spent = summary.plannedExpenses > 0 ? summary.spentToDate / summary.plannedExpenses : 0;
   const over = summary.margin < 0;
 
@@ -24,7 +25,7 @@ export function HeroCard({ monthId, summary, today }: HeroCardProps) {
           <p className={cx('font-headline text-4xl font-bold leading-tight', over ? 'text-error' : 'text-on-surface')}>{formatPeso(Math.abs(summary.margin))}</p>
           <p className="mt-1 text-sm text-on-surface-variant">
             {pace !== null && !over
-              ? `About ${formatPeso(pace)} a day for the ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
+              ? `You can spend about ${formatPeso(pace)} a day on everyday things (${daysLeft} day${daysLeft === 1 ? '' : 's'} left)`
               : daysLeft === 0
                 ? 'This month has ended'
                 : 'Trim a spending pool or add income to get back on plan'}

@@ -4,6 +4,8 @@ import { addMonths, daysInMonth, dueDateFor, formatMonthLabel, isValidMonthId, t
 import { newId, nowIso } from '../../domain/id';
 import type { Centavos } from '../../domain/money';
 import type { BudgetItem, CloseResolution, GoalPlan, IncomeItem } from '../../domain/types';
+import { fundingFor } from '../funding';
+import { DEFAULT_SETTINGS } from '../seed';
 import { check } from './guards';
 import { TX_TABLES, insertTransaction } from './transactions';
 
@@ -15,13 +17,14 @@ export interface StartMonthResult {
 
 /** Reads one month's records (must run inside a Dexie transaction that includes these tables, or standalone). */
 export async function loadMonthData(monthId: MonthId): Promise<MonthData> {
-  const [items, incomeItems, goalPlans, transactions] = await Promise.all([
+  const [items, incomeItems, goalPlans, transactions, funding] = await Promise.all([
     db.budgetItems.where('monthId').equals(monthId).toArray(),
     db.incomeItems.where('monthId').equals(monthId).toArray(),
     db.goalPlans.where('monthId').equals(monthId).toArray(),
     db.transactions.where('monthId').equals(monthId).toArray(),
+    db.months.get(monthId).then(fundingFor),
   ]);
-  return { items, incomeItems, goalPlans, transactions };
+  return { items, incomeItems, goalPlans, transactions, funding };
 }
 
 /** A goal's balance from months before `monthId` (contributions − withdrawals). */
@@ -55,9 +58,14 @@ async function upsertCarryover(monthId: MonthId, fromMonth: MonthId, amount: Cen
  */
 export async function startMonth(monthId: MonthId, { fromTemplates }: { fromTemplates: boolean }): Promise<StartMonthResult> {
   check(isValidMonthId(monthId), 'Invalid month.');
-  return db.transaction('rw', [db.months, db.templates, db.budgetItems, db.incomeItems, db.goals, db.goalPlans, db.transactions], async () => {
+  return db.transaction('rw', [db.months, db.templates, db.budgetItems, db.incomeItems, db.goals, db.goalPlans, db.transactions, db.settings], async () => {
     check(!(await db.months.get(monthId)), `${formatMonthLabel(monthId)} has already been started.`);
-    await db.months.add({ id: monthId, status: 'open', createdAt: nowIso(), closedAt: null, closeResolution: null });
+    const settings = (await db.settings.get('app')) ?? DEFAULT_SETTINGS;
+    await db.months.add({
+      id: monthId, status: 'open', createdAt: nowIso(), closedAt: null, closeResolution: null,
+      // The income-timing setting is captured per month, so turning it off later never rewrites history.
+      ...(settings.incomeTiming === 'next-month' ? { fundedBy: 'previous-month' as const } : {}),
+    });
 
     const previousId = addMonths(monthId, -1);
     const previous = await db.months.get(previousId);
@@ -98,6 +106,17 @@ export async function startMonth(monthId: MonthId, { fromTemplates }: { fromTemp
   });
 }
 
+/**
+ * True in the one "switch" month: this month counts its own paydays (normal month) but next month will
+ * run on those same paydays. Its "leftover" is that same money, so moving it anywhere (next month or a goal)
+ * would count it twice — the switch month can only be closed with "Leave it".
+ */
+export async function isSwitchMonth(monthId: MonthId): Promise<boolean> {
+  const [month, next, settings] = await Promise.all([db.months.get(monthId), db.months.get(addMonths(monthId, 1)), db.settings.get('app')]);
+  if (!month || month.fundedBy === 'previous-month') return false;
+  return next ? next.fundedBy === 'previous-month' : settings?.incomeTiming === 'next-month';
+}
+
 export type CloseChoice = { kind: 'goal'; goalId: string } | { kind: 'carryover' } | { kind: 'leave' };
 
 /**
@@ -108,10 +127,15 @@ export type CloseChoice = { kind: 'goal'; goalId: string } | { kind: 'carryover'
  * The leftover is computed here from stored data, never trusted from the UI.
  */
 export async function closeMonth(monthId: MonthId, choice: CloseChoice): Promise<CloseResolution> {
-  return db.transaction('rw', [...TX_TABLES, db.months, db.goalPlans], async () => {
+  return db.transaction('rw', [...TX_TABLES, db.months, db.goalPlans, db.settings], async () => {
     const month = await db.months.get(monthId);
     check(month, `${formatMonthLabel(monthId)} hasn't been started.`);
     check(month.status === 'open', `${formatMonthLabel(monthId)} is already closed.`);
+    if (choice.kind !== 'leave') {
+      const next = formatMonthLabel(addMonths(monthId, 1)).split(' ')[0];
+      const name = formatMonthLabel(monthId).split(' ')[0];
+      check(!(await isSwitchMonth(monthId)), `${next} already runs on ${name}'s paydays, so moving this leftover would count it twice. Choose "Leave it".`);
+    }
 
     const leftover = Math.max(summarizeMonth(await loadMonthData(monthId)).margin, 0);
     let resolution: CloseResolution;

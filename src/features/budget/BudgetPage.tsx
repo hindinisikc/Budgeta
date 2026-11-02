@@ -30,7 +30,7 @@ type SheetState =
   | { kind: 'editItem'; itemId: string | null }
   | { kind: 'pay'; itemId: string }
   | { kind: 'payments'; itemId: string }
-  | { kind: 'editIncome'; incomeId: string | null }
+  | { kind: 'editIncome'; incomeId: string | null; source?: 'regular' | 'opening' }
   | { kind: 'receive'; incomeId: string }
   | { kind: 'close' }
   | { kind: 'unpay'; itemId: string };
@@ -150,7 +150,9 @@ export function BudgetPage() {
           <IncomeSection
             summary={summary}
             accountById={accountById}
+            monthId={selectedMonth}
             onAdd={() => open({ kind: 'editIncome', incomeId: null })}
+            onAddMoney={() => open({ kind: 'editIncome', incomeId: null, source: 'opening' })}
             onEdit={(s) => open({ kind: 'editIncome', incomeId: s.income.id })}
             onReceive={(s) => open({ kind: 'receive', incomeId: s.income.id })}
           />
@@ -189,6 +191,7 @@ export function BudgetPage() {
           total: incomeTarget ? sum(receiptsOf(incomeTarget.income.id).map((t) => t.amount)) : 0,
         }}
         accounts={accounts}
+        source={lastSheet.kind === 'editIncome' ? lastSheet.source : undefined}
       />
 
       <UnpaySheet open={sheet.kind === 'unpay'} onClose={close} target={payTarget} paymentCount={payTarget ? paymentsOf(payTarget.item.id).length : 0} />

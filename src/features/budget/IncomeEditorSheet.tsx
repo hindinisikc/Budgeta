@@ -15,9 +15,12 @@ interface IncomeEditorSheetProps {
   income: IncomeItem | null;
   received: { count: number; total: number };
   accounts: Account[];
+  /** New lines only: 'opening' = money already in hand for this month (one-month-ahead months). */
+  source?: 'regular' | 'opening';
 }
 
-export function IncomeEditorSheet({ open, onClose, monthId, income, received, accounts }: IncomeEditorSheetProps) {
+export function IncomeEditorSheet({ open, onClose, monthId, income, received, accounts, source = 'regular' }: IncomeEditorSheetProps) {
+  const opening = income ? income.source !== 'regular' : source === 'opening';
   const [name, setName] = useState('');
   const [expectedText, setExpectedText] = useState('');
   const [date, setDate] = useState('');
@@ -44,7 +47,7 @@ export function IncomeEditorSheet({ open, onClose, monthId, income, received, ac
     const input = { name, expected, expectedDate: date || null, accountId: accountId || null };
     void run(async () => {
       if (income) await updateIncome(income.id, input);
-      else await addIncome(monthId, input);
+      else await addIncome(monthId, input, source);
       onClose();
     });
   };
@@ -63,7 +66,7 @@ export function IncomeEditorSheet({ open, onClose, monthId, income, received, ac
     <Sheet
       open={open}
       onClose={onClose}
-      title={income ? 'Edit Income' : 'New Income'}
+      title={opening ? (income ? 'Edit Money' : 'Add Money') : income ? 'Edit Income' : 'New Income'}
       headerAction={
         <Button variant="tonal" disabled={busy} onClick={save}>
           Save
@@ -71,8 +74,8 @@ export function IncomeEditorSheet({ open, onClose, monthId, income, received, ac
       }
     >
       <div className="space-y-5 pt-1">
-        <TextField label="Name" value={name} maxLength={NAME_MAX} placeholder="e.g. Salary (15th cutoff)" onChange={(e) => setName(e.target.value)} />
-        <AmountInput label="Expected amount" value={expectedText} onChange={setExpectedText} />
+        <TextField label="Name" value={name} maxLength={NAME_MAX} placeholder={opening ? 'e.g. Cash on hand' : 'e.g. Salary (15th cutoff)'} onChange={(e) => setName(e.target.value)} />
+        <AmountInput label={opening ? 'Amount' : 'Expected amount'} value={expectedText} onChange={setExpectedText} />
         <DateField label="Expected date (optional)" value={date} min={bounds.min} max={bounds.max} onChange={(e) => setDate(e.target.value)} />
         <SelectField
           label="Goes to account (optional)"

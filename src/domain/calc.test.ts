@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { dailySafePace, goalBalances, summarizeItem, summarizeMonth, type MonthData } from './calc';
+import { dailySafePace, earningsFunding, goalBalances, summarizeItem, summarizeMonth, type MonthData } from './calc';
 import { pesos } from './money';
 import { paceStatus } from './status';
 import type { BudgetItem, GoalPlan, IncomeItem, Transaction, TransactionType } from './types';
@@ -227,5 +227,40 @@ describe('daily pace and status', () => {
     expect(s.margin).toBe(0);
     expect(s.completion).toBe(0);
     expect(paceStatus(s, 0.5)).toBe('on_track');
+  });
+});
+
+describe('one month ahead (funded by last month\'s paydays)', () => {
+  // December runs on November's paydays: ₱13,000 + ₱78,000 received, ₱13,000 (30th) not marked yet.
+  const nov: IncomeItem[] = [
+    { ...income('n15', 13000), monthId: '2026-11' },
+    { ...income('n27', 70000), monthId: '2026-11' },
+    { ...income('n30', 13000), monthId: '2026-11' },
+  ];
+  const novTx = [tx('income', 13000, { incomeItemId: 'n15', monthId: '2026-11' }), tx('income', 78000, { incomeItemId: 'n27', monthId: '2026-11' })];
+
+  it('funds the month with last month\'s paydays (actual where received)', () => {
+    const f = earningsFunding('2026-11', nov, novTx);
+    expect(f).toEqual({ fromMonth: '2026-11', expected: pesos(96000), received: pesos(91000), funds: pesos(104000) });
+  });
+
+  it('this month\'s paydays do not count now; carry-over, opening money and extra income do', () => {
+    const funding = earningsFunding('2026-11', nov, novTx);
+    // mockupMonth(): ₱85k of paydays this month (would fund next month), ₱64k planned, ₱12k savings.
+    data.incomeItems.push({ ...income('carry', 2000), source: 'carryover' }, { ...income('cash', 1000), source: 'opening' });
+    data.transactions.push(tx('income', 42500, { incomeItemId: 'cutoff15' }), tx('income', 500));
+    const s = summarizeMonth({ ...data, funding });
+    expect(s.plannedIncome).toBe(pesos(104000 + 2000 + 1000));
+    expect(s.availableFunds).toBe(pesos(104000 + 2000 + 1000 + 500));
+    expect(s.margin).toBe(pesos(107500 - 64000 - 12000));
+    expect(s.earnings).toEqual({ expected: pesos(85000), received: pesos(42500) });
+    expect(s.funding?.funds).toBe(pesos(104000));
+  });
+
+  it('normal months are unchanged', () => {
+    const s = summarizeMonth(data);
+    expect(s.funding).toBeNull();
+    expect(s.earnings).toBeNull();
+    expect(s.margin).toBe(pesos(9000));
   });
 });

@@ -16,14 +16,15 @@ async function clean(monthId: MonthId, input: IncomeInput): Promise<IncomeInput>
   return { name: cleanName(input.name), expected: input.expected, expectedDate: input.expectedDate, accountId: input.accountId };
 }
 
-export async function addIncome(monthId: MonthId, input: IncomeInput): Promise<string> {
+/** source 'opening' = money already in hand for this month (used by "one month ahead" months). */
+export async function addIncome(monthId: MonthId, input: IncomeInput, source: 'regular' | 'opening' = 'regular'): Promise<string> {
   return db.transaction('rw', [db.months, db.incomeItems, db.accounts], async () => {
     check(await db.months.get(monthId), 'Start this month before adding income.');
     const data = await clean(monthId, input);
     const existing = await db.incomeItems.where('monthId').equals(monthId).toArray();
     const order = existing.reduce((max, i) => Math.max(max, i.order), -1) + 1;
     const id = newId();
-    await db.incomeItems.add({ id, monthId, templateId: null, source: 'regular', order, ...data });
+    await db.incomeItems.add({ id, monthId, templateId: null, source, order, ...data });
     return id;
   });
 }
