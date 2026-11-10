@@ -20,7 +20,7 @@ export function paceStatus(summary: MonthSummary, elapsedFraction: number): Pace
 }
 
 export const PACE_LABEL: Record<PaceStatus, string> = {
-  on_track: 'On Track',
+  on_track: 'On track',
   watch: 'Watch',
   over: 'Over',
 };

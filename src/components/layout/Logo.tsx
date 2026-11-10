@@ -7,7 +7,7 @@ export function Logo({ className, showName = true }: { className?: string; showN
       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-on-primary">
         <Icon name="eco_fill" size={18} />
       </span>
-      {showName && <span className="font-headline text-base font-semibold tracking-tight">Budgeta</span>}
+      {showName && <span className="text-base font-semibold tracking-tight">Budgeta</span>}
     </span>
   );
 }

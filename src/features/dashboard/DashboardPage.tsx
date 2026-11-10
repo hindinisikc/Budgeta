@@ -1,13 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router';
-import { Badge, Icon, PageHeading, SectionHeader } from '../../components/ui';
+import { Icon, SectionHeader } from '../../components/ui';
 import { db } from '../../db/db';
 import { useLookups, useMonthRecords, useTemplates } from '../../db/hooks';
 import { summarizeMonth } from '../../domain/calc';
-import { formatShortDate, monthElapsedFraction, todayStr } from '../../domain/dates';
+import { formatShortDate, todayStr } from '../../domain/dates';
 import type { DueEntry } from '../../domain/due';
-import { PACE_LABEL, paceStatus } from '../../domain/status';
 import { useUi } from '../../state/ui';
 import { TransactionRow } from '../activity/TransactionRow';
 import { DueEntrySheets } from '../budget/DueEntrySheets';
@@ -15,8 +14,6 @@ import { StartMonthCard } from '../budget/StartMonthCard';
 import { HeroCard } from './HeroCard';
 import { UpcomingBills } from './UpcomingBills';
 import { WelcomeChecklist } from './WelcomeChecklist';
-
-const PACE_TONE = { on_track: 'primary', watch: 'tertiary', over: 'error' } as const;
 
 export function DashboardPage() {
   const { selectedMonth, openQuickAdd } = useUi();
@@ -32,9 +29,8 @@ export function DashboardPage() {
   const summary = useMemo(() => (records ? summarizeMonth(records) : null), [records]);
   const today = todayStr();
 
-  if (!records || !lookups || !templates || !goals || !summary || anyTransaction === undefined) return <PageHeading title="Financial Health" />;
+  if (!records || !lookups || !templates || !goals || !summary || anyTransaction === undefined) return null;
 
-  const status = paceStatus(summary, monthElapsedFraction(selectedMonth, today));
   const checklist = (
     <WelcomeChecklist
       hasTemplates={templates.length > 0}
@@ -49,7 +45,6 @@ export function DashboardPage() {
   if (!records.month) {
     return (
       <>
-        <PageHeading title="Financial Health" />
         {checklist}
         <StartMonthCard monthId={selectedMonth} templates={templates} />
       </>
@@ -66,14 +61,6 @@ export function DashboardPage() {
 
   return (
     <>
-      <PageHeading
-        title="Financial Health"
-        trailing={
-          <Badge tone={PACE_TONE[status]} icon="eco_fill" className="px-3 py-1.5">
-            {PACE_LABEL[status]}
-          </Badge>
-        }
-      />
       {checklist}
 
       <div className="grid items-start gap-5 lg:grid-cols-2">
@@ -92,10 +79,10 @@ export function DashboardPage() {
 
         <section className="min-w-0 space-y-2.5">
           <SectionHeader
-            title="Recent Activity"
+            title="Recent"
             action={
               <Link to="/activity" className="inline-flex min-h-11 items-center px-1 text-primary hover:underline">
-                All History
+                See all
               </Link>
             }
           />

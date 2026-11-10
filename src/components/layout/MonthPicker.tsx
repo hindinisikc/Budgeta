@@ -61,7 +61,7 @@ export function MonthPicker() {
             <button type="button" aria-label="Previous year" onClick={() => setViewYear((y) => y - 1)} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface-container">
               <Icon name="chevron_left" size={22} />
             </button>
-            <span className="font-headline text-base font-bold">{viewYear}</span>
+            <span className="text-base font-semibold">{viewYear}</span>
             <button type="button" aria-label="Next year" onClick={() => setViewYear((y) => y + 1)} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface-container">
               <Icon name="chevron_right" size={22} />
             </button>

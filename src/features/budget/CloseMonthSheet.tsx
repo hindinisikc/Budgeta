@@ -93,8 +93,8 @@ export function CloseMonthSheet({ open, onClose, monthId, margin, goals }: Close
         )}
 
         <div className={cx('rounded-xl p-4', margin < 0 ? 'bg-error-container' : 'bg-primary-fixed')}>
-          <p className="text-xs font-bold uppercase tracking-wider text-on-primary-fixed-variant">{margin < 0 ? 'Over plan by' : 'Leftover margin'}</p>
-          <p className="font-headline text-3xl font-bold">{formatPeso(Math.abs(margin))}</p>
+          <p className="text-sm font-medium text-on-primary-fixed-variant">{margin < 0 ? 'Over plan by' : 'Left over'}</p>
+          <p className="text-3xl font-bold">{formatPeso(Math.abs(margin))}</p>
           {margin <= 0 && <p className="mt-1 text-sm">There's nothing left over to move.</p>}
         </div>
 

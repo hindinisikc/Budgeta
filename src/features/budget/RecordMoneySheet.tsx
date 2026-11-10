@@ -91,7 +91,7 @@ export function RecordMoneySheet(props: RecordMoneySheetProps) {
     >
       <div className="space-y-5 pt-1">
         <div className="rounded-xl bg-surface-container-low px-4 py-3">
-          <p className="font-headline text-lg font-bold">{name}</p>
+          <p className="text-lg font-semibold">{name}</p>
           <p className="text-sm text-on-surface-variant">{context}</p>
         </div>
 
@@ -114,11 +114,11 @@ export function RecordMoneySheet(props: RecordMoneySheetProps) {
               setSettleOn(v);
               setSettleTouched(true);
             }}
-            label="Mark as settled"
+            label="Mark as done"
             description={
               settleOn
                 ? leftover > 0
-                  ? `Closes this item. The unspent ${formatPeso(leftover)} goes back to your Margin.`
+                  ? `Closes this item. The unspent ${formatPeso(leftover)} goes back to Safe to spend.`
                   : 'Closes this item.'
                 : 'Keep it open for more payments (e.g. next cutoff).'
             }

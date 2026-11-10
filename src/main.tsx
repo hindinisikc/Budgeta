@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource-variable/literata';
-import '@fontsource-variable/nunito-sans';
+import '@fontsource-variable/inter';
 import './styles/theme.css';
 import { App } from './App';
 import { db } from './db/db';
@@ -28,7 +27,7 @@ db.open()
     console.error(err);
     root.render(
       <div className="mx-auto max-w-md p-6 pt-16 text-center">
-        <h1 className="font-headline text-2xl font-bold">Budgeta can't open its storage</h1>
+        <h1 className="text-2xl font-bold">Budgeta can't open its storage</h1>
         <p className="mt-2 text-on-surface-variant">
           Your browser blocked local storage (this can happen in private/incognito mode or when storage is full). Open
           Budgeta in a normal browser window and try again.

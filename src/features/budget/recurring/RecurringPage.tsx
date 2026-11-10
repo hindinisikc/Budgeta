@@ -10,7 +10,7 @@ import { TemplateEditorSheet } from './TemplateEditorSheet';
 const GROUPS: Array<{ kind: Template['kind']; title: string; empty: string }> = [
   { kind: 'income', title: 'Income', empty: 'e.g. salary cutoffs, allowance received' },
   { kind: 'bill', title: 'Bills', empty: 'e.g. rent, internet, loans, tuition' },
-  { kind: 'flexible', title: 'Spending pools', empty: 'e.g. groceries, transport, laundry' },
+  { kind: 'flexible', title: 'Budgets', empty: 'e.g. groceries, transport, laundry' },
 ];
 
 /** The recurring list ("templates") copied into each new month. */
@@ -79,13 +79,13 @@ export function RecurringPage() {
                           <IconChip icon={g.kind === 'income' ? 'payments' : toIconName(category?.icon ?? 'category')} size="sm" shape="rounded" />
                           <span className="min-w-0">
                             <span className="flex items-center gap-2">
-                              <span className="break-words font-headline text-sm font-semibold">{t.name}</span>
+                              <span className="break-words text-sm font-semibold">{t.name}</span>
                               {!t.active && <Badge>Paused</Badge>}
                             </span>
                             <span className="block truncate text-xs text-on-surface-variant">{details || category?.name || ' '}</span>
                           </span>
                         </span>
-                        <span className="shrink-0 font-headline text-sm font-bold">{formatPeso(t.defaultAmount)}</span>
+                        <span className="shrink-0 text-sm font-semibold">{formatPeso(t.defaultAmount)}</span>
                       </button>
                     );
                   })

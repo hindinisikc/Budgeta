@@ -21,7 +21,7 @@ interface WelcomeChecklistProps {
 /** First-run guide; disappears once every step is done. */
 export function WelcomeChecklist({ hasTemplates, monthStarted, hasGoals, hasTransactions, monthId, onQuickAdd }: WelcomeChecklistProps) {
   const steps: Step[] = [
-    { done: hasTemplates, title: 'Add your recurring items', text: 'Salary, rent, bills and spending pools — once.', to: '/budget/recurring' },
+    { done: hasTemplates, title: 'Add your recurring items', text: 'Salary, bills and budgets — once.', to: '/budget/recurring' },
     { done: monthStarted, title: `Start ${formatMonthLabel(monthId)}`, text: 'Copies your recurring items into the month.', to: '/budget' },
     { done: hasGoals, title: 'Create a savings goal', text: 'An emergency fund is a great first one.', to: '/savings' },
     { done: hasTransactions, title: 'Log your first expense', text: 'Tap + whenever you spend.', to: '' },
@@ -32,7 +32,7 @@ export function WelcomeChecklist({ hasTemplates, monthStarted, hasGoals, hasTran
   return (
     <section className="rounded-xl bg-primary-fixed/60 p-5 shadow-soft">
       <div className="flex items-baseline justify-between gap-2">
-        <h3 className="font-headline text-lg font-bold text-on-primary-fixed">Welcome to Budgeta</h3>
+        <h3 className="text-lg font-semibold text-on-primary-fixed">Welcome to Budgeta</h3>
         <span className="text-sm font-semibold text-on-primary-fixed-variant">
           {doneCount} of {steps.length}
         </span>

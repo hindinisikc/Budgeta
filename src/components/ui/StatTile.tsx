@@ -29,7 +29,7 @@ export function StatTile({ label, value, caption, icon, iconTone = 'primary', ca
         <span className="truncate text-xs font-semibold text-on-surface-variant">{label}</span>
         {icon && <Icon name={icon} size={16} className={textTone[iconTone]} />}
       </div>
-      <span className="truncate font-headline text-base font-bold leading-tight">{value}</span>
+      <span className="truncate text-base font-semibold leading-tight">{value}</span>
       {caption && <span className={cx('mt-0.5 truncate text-xs', textTone[captionTone])}>{caption}</span>}
     </div>
   );

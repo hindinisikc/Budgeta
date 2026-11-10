@@ -2,9 +2,9 @@ import { useId, type ReactNode, type SelectHTMLAttributes, type InputHTMLAttribu
 import { Icon } from './Icon';
 import { cx } from './cx';
 
-export const fieldLabelClass = 'block px-1 text-xs font-semibold uppercase tracking-wider text-on-surface-variant';
+export const fieldLabelClass = 'block px-1 text-sm font-medium text-on-surface-variant';
 export const fieldInputClass =
-  'min-h-12 w-full rounded-xl bg-surface-container-low px-4 text-base font-semibold text-on-surface placeholder:text-outline transition-all focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary';
+  'min-h-12 w-full rounded-xl bg-surface-container-low px-4 text-base font-medium text-on-surface ring-1 ring-inset ring-outline-variant/70 placeholder:text-outline transition-all focus:outline-none focus:ring-2 focus:ring-primary';
 
 interface FieldShellProps {
   label: string;

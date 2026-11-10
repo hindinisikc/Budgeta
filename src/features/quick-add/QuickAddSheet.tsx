@@ -5,16 +5,34 @@ import { db } from '../../db/db';
 import { useLookups, useMonthRecords } from '../../db/hooks';
 import { quickAddExpense } from '../../db/repo/transactions';
 import { summarizeMonth } from '../../domain/calc';
-import { formatMonthLabel, isValidDateStr, monthOf, todayStr } from '../../domain/dates';
+import { formatMonthLabel, formatShortDate, isValidDateStr, monthOf, todayStr } from '../../domain/dates';
 import { formatPeso, parseAmount } from '../../domain/money';
 import type { Transaction } from '../../domain/types';
 import { DESCRIPTION_MAX, NOTE_MAX } from '../../domain/validate';
 import { useUi } from '../../state/ui';
 import { useAction } from '../../state/useAction';
-import { amountToInput, labelOptions } from '../budget/helpers';
+import { labelOptions } from '../budget/helpers';
 
-const QUICK_AMOUNTS = [5000, 10000, 50000, 100000]; // ₱50, ₱100, ₱500, ₱1k
 const UNPLANNED = 'unplanned';
+const LAST_ACCOUNT_KEY = 'budgeta.quickAdd.lastAccount';
+
+/** The account used last time (e.g. Credit card), so it doesn't need picking every time. */
+function lastAccount(): string | null {
+  try {
+    return localStorage.getItem(LAST_ACCOUNT_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function rememberAccount(id: string | null) {
+  try {
+    if (id) localStorage.setItem(LAST_ACCOUNT_KEY, id);
+    else localStorage.removeItem(LAST_ACCOUNT_KEY);
+  } catch {
+    // Storage blocked: falls back to the most recent expense's account.
+  }
+}
 
 /** The FAB's "Quick Expense" sheet. Every expense lands on a budget line or is marked unplanned. */
 export function QuickAddSheet() {
@@ -27,6 +45,7 @@ export function QuickAddSheet() {
   const [accountId, setAccountId] = useState<string | null>(null);
   const [date, setDate] = useState(todayStr());
   const [note, setNote] = useState('');
+  const [showMore, setShowMore] = useState(false);
   const amountRef = useRef<HTMLInputElement>(null);
   const { busy, error, setError, run } = useAction();
 
@@ -41,9 +60,13 @@ export function QuickAddSheet() {
     setDescription('');
     setTarget(null);
     setCategoryId(null);
-    setAccountId(recent?.[0]?.accountId ?? lookups?.accounts.find((a) => !a.archived)?.id ?? null);
+    const remembered = lastAccount();
+    const recentAccount = recent?.[0]?.accountId ?? null;
+    const usable = (id: string | null) => !!id && !!lookups?.accounts.some((a) => a.id === id && !a.archived);
+    setAccountId(usable(remembered) ? remembered : usable(recentAccount) ? recentAccount : (lookups?.accounts.find((a) => !a.archived)?.id ?? null));
     setDate(todayStr());
     setNote('');
+    setShowMore(false);
     setError(null);
     requestAnimationFrame(() => amountRef.current?.focus());
   }, [quickAddOpen]);
@@ -80,22 +103,20 @@ export function QuickAddSheet() {
   };
 
   const amount = parseAmount(amountText);
-  // Functional update so rapid taps (+₱100, +₱50) accumulate instead of reading a stale amount.
-  const bump = (centavos: number) => setAmountText((prev) => amountToInput((parseAmount(prev) ?? 0) + centavos));
 
   const selected = target && target !== UNPLANNED ? summary?.items.find((s) => s.item.id === target) : undefined;
   const after = amount ?? 0;
   const hint = selected
     ? `Counts toward ${selected.item.name} (${formatPeso(Math.max(selected.remaining - after, 0))} left after this${selected.remaining - after < 0 ? `, over by ${formatPeso(after - selected.remaining)}` : ''})`
     : target === UNPLANNED && summary
-      ? `Unplanned · Margin after this: ${formatPeso(summary.margin - after)}`
-      : 'Pick the budget line this belongs to, or Unplanned.';
+      ? `Unplanned · Safe to spend after this: ${formatPeso(summary.margin - after)}`
+      : 'Pick what this is for, or Unplanned.';
 
   const overBudget = selected ? selected.remaining - after < 0 : target === UNPLANNED && !!summary && summary.margin - after < 0;
 
   const save = () => {
     if (amount === null || amount <= 0) return setError('Enter an amount greater than ₱0.');
-    if (!target) return setError('Pick what this counts toward.');
+    if (!target) return setError("Pick what it's for.");
     if (target === UNPLANNED && !categoryId) return setError('Pick a category for this unplanned expense.');
     void run(async () => {
       await quickAddExpense({
@@ -103,6 +124,7 @@ export function QuickAddSheet() {
         budgetItemId: target === UNPLANNED ? null : target,
         categoryId: target === UNPLANNED ? categoryId : null,
       });
+      rememberAccount(accountId);
       closeQuickAdd();
       const where = selected?.item.name ?? lookups?.categoryById.get(categoryId ?? '')?.name ?? 'unplanned';
       showToast(`Added ${formatPeso(amount)} to ${where}`);
@@ -110,7 +132,7 @@ export function QuickAddSheet() {
   };
 
   if (!lookups) return null;
-  const { categories, accounts, categoryById } = lookups;
+  const { categories, accounts, categoryById, accountById } = lookups;
 
   return (
     <Sheet
@@ -135,10 +157,10 @@ export function QuickAddSheet() {
         {/* Amount */}
         <div className="rounded-xl bg-surface-container-low p-4">
           <label htmlFor="qa-amount" className={cx(fieldLabelClass, 'text-center')}>
-            Expense amount
+            Amount
           </label>
           <div className="mt-1 flex items-center justify-center gap-2">
-            <span className="font-headline text-3xl font-bold text-on-surface-variant">₱</span>
+            <span className="text-3xl font-bold text-on-surface-variant">₱</span>
             <input
               id="qa-amount"
               ref={amountRef}
@@ -147,40 +169,14 @@ export function QuickAddSheet() {
               placeholder="0"
               value={amountText}
               onChange={(e) => setAmountText(e.target.value.replace(/[^\d.,]/g, ''))}
-              className="w-48 bg-transparent text-center font-headline text-5xl font-bold tracking-tight placeholder:text-outline focus:outline-none"
+              className="w-48 bg-transparent text-center text-5xl font-bold tracking-tight placeholder:text-outline focus:outline-none"
             />
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {QUICK_AMOUNTS.map((c) => (
-              <button key={c} type="button" onClick={() => bump(c)} className="min-h-11 rounded-full bg-surface-container text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high">
-                +{c >= 100000 ? `₱${c / 100000}k` : formatPeso(c)}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Description */}
+        {/* What it's for */}
         <div className="space-y-2">
-          <TextField label="What was this for?" value={description} maxLength={DESCRIPTION_MAX} placeholder="e.g. Jeepney fare, Iced latte" onChange={(e) => setDescription(e.target.value)} />
-          {suggestions.length > 0 && (
-            <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4">
-              {suggestions.map((t) => (
-                <button key={t.id} type="button" onClick={() => applySuggestion(t)} className="min-h-10 shrink-0 rounded-full bg-surface-container px-3.5 text-sm text-on-surface-variant hover:bg-surface-container-high">
-                  {t.description}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Budget line */}
-        <div className="space-y-2">
-          <div className="flex items-baseline justify-between gap-2 px-1">
-            <span className={fieldLabelClass}>Counts toward</span>
-            <span className="truncate text-sm font-semibold text-primary">
-              {selected?.item.name ?? (target === UNPLANNED ? 'Unplanned' : '')}
-            </span>
-          </div>
+          <span className={cx(fieldLabelClass, 'px-1')}>What's it for?</span>
           {!monthStarted && (
             <p className="rounded-lg bg-tertiary-fixed/60 px-3 py-2 text-sm text-on-tertiary-fixed">
               {formatMonthLabel(monthId)} hasn't been started, so there are no budget lines yet. You can still log it as unplanned.
@@ -202,7 +198,7 @@ export function QuickAddSheet() {
         </div>
 
         {target === UNPLANNED && (
-          <div className="space-y-2">
+          <div className="animate-reveal space-y-2">
             <span className={fieldLabelClass}>Category</span>
             <div className="grid grid-cols-4 gap-2">
               {labelOptions(categories, categoryId).map((c) => (
@@ -212,17 +208,47 @@ export function QuickAddSheet() {
           </div>
         )}
 
-        <ChipSelect
-          label="Paid with"
-          value={accountId}
-          onChange={setAccountId}
-          allowNone
-          options={labelOptions(accounts, accountId).map((a) => ({ value: a.id, label: a.name, icon: toIconName(a.icon) }))}
-        />
-
-        <div className="grid grid-cols-2 gap-3">
-          <DateField label="Date" value={date} onChange={(e) => setDate(e.target.value)} />
-          <TextField label="Note" value={note} maxLength={NOTE_MAX} placeholder="Optional" onChange={(e) => setNote(e.target.value)} />
+        {/* Everything optional lives under "More", with a one-line summary of what will be used. */}
+        <div className="rounded-xl bg-surface-container-low">
+          <button
+            type="button"
+            onClick={() => setShowMore((s) => !s)}
+            aria-expanded={showMore}
+            className="flex min-h-12 w-full items-center justify-between gap-3 px-4 text-left"
+          >
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold">More</span>
+              <span className="block truncate text-xs text-on-surface-variant">
+                {[accountId ? accountById.get(accountId)?.name : 'No account', date === todayStr() ? 'Today' : formatShortDate(date), description.trim()].filter(Boolean).join(' · ')}
+              </span>
+            </span>
+            <Icon name="keyboard_arrow_down" size={20} className={cx('shrink-0 text-on-surface-variant transition-transform duration-200', showMore && 'rotate-180')} />
+          </button>
+          {showMore && (
+            <div className="animate-reveal space-y-5 px-4 pb-4 pt-1">
+              <div className="space-y-2">
+                <TextField label="Description" value={description} maxLength={DESCRIPTION_MAX} placeholder="e.g. Jeepney fare, Iced latte" onChange={(e) => setDescription(e.target.value)} />
+                {suggestions.length > 0 && (
+                  <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4">
+                    {suggestions.map((t) => (
+                      <button key={t.id} type="button" onClick={() => applySuggestion(t)} className="min-h-10 shrink-0 rounded-full bg-surface-container px-3.5 text-sm text-on-surface-variant hover:bg-surface-container-high">
+                        {t.description}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <ChipSelect
+                label="Paid with"
+                value={accountId}
+                onChange={setAccountId}
+                allowNone
+                options={labelOptions(accounts, accountId).map((a) => ({ value: a.id, label: a.name, icon: toIconName(a.icon) }))}
+              />
+              <DateField label="Date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <TextField label="Note" value={note} maxLength={NOTE_MAX} placeholder="Optional" onChange={(e) => setNote(e.target.value)} />
+            </div>
+          )}
         </div>
 
         <FormError message={error} />
@@ -247,7 +273,7 @@ function Tile({ active, icon, label, sub, compact, onClick }: TileProps) {
       onClick={onClick}
       aria-pressed={active}
       className={cx(
-        'flex flex-col items-center justify-center gap-1 rounded-xl px-2 text-center transition-colors',
+        'flex flex-col items-center justify-center gap-1 rounded-xl px-2 text-center transition-all duration-150 active:scale-95',
         compact ? 'min-h-20 py-2' : 'min-h-24 py-2.5',
         active ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container',
       )}

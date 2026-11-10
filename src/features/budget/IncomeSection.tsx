@@ -1,4 +1,4 @@
-import { Icon, IconChip, SectionHeader } from '../../components/ui';
+import { Icon, SectionHeader } from '../../components/ui';
 import type { IncomeSummary, MonthSummary } from '../../domain/calc';
 import { addMonths, formatShortDate, monthName, parseMonthId, type MonthId } from '../../domain/dates';
 import { formatPeso } from '../../domain/money';
@@ -24,23 +24,20 @@ export function IncomeSection({ monthId, summary, accountById, onAdd, onAddMoney
     const details = [s.income.expectedDate && formatShortDate(s.income.expectedDate), account?.name].filter(Boolean).join(' · ');
     const inHand = s.income.source !== 'regular';
     return (
-      <li key={s.income.id} className="flex items-center justify-between gap-3 px-4 py-3">
-        <button type="button" onClick={() => onEdit(s)} className="flex min-h-11 min-w-0 items-center gap-3 text-left">
-          <IconChip icon={inHand || s.isReceived ? 'check_circle' : 'schedule'} tone={inHand || s.isReceived ? 'primary' : 'neutral'} size="sm" />
-          <span className="min-w-0">
-            <span className="block truncate font-headline text-sm font-semibold">{s.income.name}</span>
-            <span className="block truncate text-xs text-on-surface-variant">{details || (inHand ? 'Already in hand' : 'Expected income')}</span>
-          </span>
+      <li key={s.income.id} className="flex animate-item-in items-center justify-between gap-3 py-1 pl-4 pr-2">
+        <button type="button" onClick={() => onEdit(s)} className="min-h-11 min-w-0 flex-1 py-1.5 text-left">
+          <span className="block truncate font-medium">{s.income.name}</span>
+          <span className="block truncate text-sm text-on-surface-variant">{details || (inHand ? 'Already in hand' : 'Expected income')}</span>
         </button>
-        <div className="shrink-0 text-right">
-          <p className="font-headline text-sm font-bold">{formatPeso(s.isReceived ? s.received : s.income.expected)}</p>
+        <div className="flex shrink-0 items-center gap-1">
+          <span className="font-semibold">{formatPeso(s.isReceived ? s.received : s.income.expected)}</span>
           {inHand ? null : s.isReceived ? (
-            <button type="button" onClick={() => onReceive(s)} className="inline-flex min-h-11 items-center text-xs font-semibold text-primary">
-              {s.received === s.income.expected ? 'Received' : `Expected ${formatPeso(s.income.expected)}`}
+            <button type="button" onClick={() => onReceive(s)} aria-label={`${s.income.name} received`} className="flex h-11 w-11 items-center justify-center text-primary">
+              <Icon name="check_circle" size={22} />
             </button>
           ) : (
-            <button type="button" onClick={() => onReceive(s)} className="inline-flex min-h-11 items-center text-xs font-bold text-primary hover:underline">
-              Mark received
+            <button type="button" onClick={() => onReceive(s)} className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-primary hover:bg-primary-fixed">
+              Receive
             </button>
           )}
         </div>
@@ -58,11 +55,11 @@ export function IncomeSection({ monthId, summary, accountById, onAdd, onAddMoney
   if (!summary.funding) {
     return (
       <section className="space-y-2.5">
-        <SectionHeader title="Income" icon="payments" iconTone="primary" action={addButton('Add income', onAdd)} />
+        <SectionHeader title="Income" action={addButton('Add income', onAdd)} />
         <div className="overflow-hidden rounded-xl bg-surface-container-low shadow-soft">
           <div className="flex items-baseline justify-between gap-2 border-b border-surface-container px-4 py-3">
             <span className="text-sm text-on-surface-variant">
-              Received <span className="font-bold text-primary">{formatPeso(summary.incomeReceived)}</span> of {formatPeso(summary.plannedIncome)} expected
+              Received <span className="font-semibold text-primary">{formatPeso(summary.incomeReceived)}</span> of {formatPeso(summary.plannedIncome)} expected
             </span>
             {summary.extraIncome > 0 && <span className="text-xs text-on-surface-variant">incl. {formatPeso(summary.extraIncome)} extra</span>}
           </div>
@@ -86,11 +83,11 @@ export function IncomeSection({ monthId, summary, accountById, onAdd, onAddMoney
 
   return (
     <section className="space-y-2.5">
-      <SectionHeader title={`Money for ${thisMonth}`} icon="payments" iconTone="primary" action={addButton('Add money', onAddMoney)} />
+      <SectionHeader title={`Money for ${thisMonth}`} action={addButton('Add money', onAddMoney)} />
       <div className="overflow-hidden rounded-xl bg-surface-container-low shadow-soft">
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <p className="font-headline text-sm font-semibold">From {nameOf(funding.fromMonth)}'s paydays</p>
+            <p className="text-sm font-semibold">From {nameOf(funding.fromMonth)}'s paydays</p>
             <p className="text-xs text-on-surface-variant">
               {funding.expected === 0
                 ? `No paydays were recorded in ${nameOf(funding.fromMonth)}`
@@ -99,25 +96,25 @@ export function IncomeSection({ monthId, summary, accountById, onAdd, onAddMoney
                   : 'All received'}
             </p>
           </div>
-          <p className="shrink-0 font-headline text-sm font-bold">{formatPeso(funding.funds)}</p>
+          <p className="shrink-0 text-sm font-semibold">{formatPeso(funding.funds)}</p>
         </div>
         {inHand.length > 0 && <ul className="divide-y divide-surface-container border-t border-surface-container">{inHand.map(row)}</ul>}
         {summary.extraIncome > 0 && (
           <div className="flex items-center justify-between gap-3 border-t border-surface-container px-4 py-3 text-sm">
             <span className="text-on-surface-variant">Extra income this month</span>
-            <span className="font-headline font-bold">{formatPeso(summary.extraIncome)}</span>
+            <span className="font-semibold">{formatPeso(summary.extraIncome)}</span>
           </div>
         )}
-        <div className="flex items-center justify-between gap-3 border-t border-outline-variant/50 px-4 py-3 text-sm font-bold">
+        <div className="flex items-center justify-between gap-3 border-t border-outline-variant/50 px-4 py-3 text-sm font-semibold">
           <span>Total for {thisMonth}</span>
-          <span className="font-headline">{formatPeso(summary.plannedIncome + summary.extraIncome)}</span>
+          <span>{formatPeso(summary.plannedIncome + summary.extraIncome)}</span>
         </div>
       </div>
 
       <SectionHeader title={`Earned in ${thisMonth} → for ${next}`} action={addButton('Add payday', onAdd)} />
       <div className="overflow-hidden rounded-xl bg-surface-container-low shadow-soft">
         <div className="border-b border-surface-container px-4 py-3 text-sm text-on-surface-variant">
-          {next}'s budget so far: <span className="font-bold text-primary">{formatPeso(earnings?.received ?? 0)}</span> of {formatPeso(earnings?.expected ?? 0)}
+          {next}'s budget so far: <span className="font-semibold text-primary">{formatPeso(earnings?.received ?? 0)}</span> of {formatPeso(earnings?.expected ?? 0)}
         </div>
         {paydays.length === 0 ? (
           <p className="px-4 py-3 text-sm text-on-surface-variant">No paydays yet. Add your salary cutoffs and sideline.</p>

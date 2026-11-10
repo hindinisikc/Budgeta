@@ -36,7 +36,7 @@ export function NotificationsPage() {
             <IconChip icon={d.kind === 'income' ? 'payments' : 'receipt_long'} tone={d.daysUntil < 0 ? 'error' : d.kind === 'income' ? 'primary' : 'tertiary'} look="soft" shape="rounded" />
             <div className="min-w-0">
               <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                <span className="truncate font-headline text-sm font-bold">{d.name}</span>
+                <span className="truncate text-sm font-semibold">{d.name}</span>
                 <Badge tone={d.daysUntil < 0 ? 'error' : d.daysUntil <= 1 ? 'tertiary' : 'neutral'}>{dueLabel(d)}</Badge>
               </p>
               <p className="truncate text-xs text-on-surface-variant">
@@ -47,7 +47,7 @@ export function NotificationsPage() {
             </div>
           </div>
           <div className="shrink-0 text-right">
-            <p className="font-headline text-sm font-bold">{formatPeso(d.amount)}</p>
+            <p className="text-sm font-semibold">{formatPeso(d.amount)}</p>
             <button type="button" onClick={() => act(d)} className="inline-flex min-h-11 items-center text-xs font-bold text-primary hover:underline">
               {d.kind === 'income' ? 'Mark received' : d.autoPay ? 'Confirm paid' : 'Pay now'}
             </button>
@@ -63,7 +63,7 @@ export function NotificationsPage() {
       {backup.due && (
         <section className="flex flex-col gap-3 rounded-xl bg-tertiary-fixed/60 p-4 shadow-soft sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-headline text-base font-bold text-on-tertiary-fixed">Back up your data</p>
+            <p className="text-base font-semibold text-on-tertiary-fixed">Back up your data</p>
             <p className="text-sm text-on-tertiary-fixed">
               {backup.daysSince === null ? "You haven't saved a backup yet." : `Your last backup was ${backup.daysSince} days ago.`} Your data only lives on this device.
             </p>

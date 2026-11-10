@@ -34,8 +34,8 @@ export function ChipSelect({ label, value, onChange, options, allowNone }: ChipS
               aria-checked={selected}
               onClick={() => onChange(selected && allowNone ? null : o.value)}
               className={cx(
-                'inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors',
-                selected ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high',
+                'inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-medium transition-all duration-150 active:scale-95',
+                selected ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface ring-1 ring-inset ring-outline-variant/70 hover:bg-surface-container',
               )}
             >
               {o.icon && <Icon name={o.icon} size={18} />}

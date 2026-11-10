@@ -95,7 +95,6 @@ export function BudgetPage() {
     <>
       {heading}
       <BudgetSummaryCard
-        monthId={selectedMonth}
         summary={summary}
         closed={records.month.status === 'closed'}
         closedText={closedText(records.month.closeResolution, goals, selectedMonth)}
@@ -126,13 +125,14 @@ export function BudgetPage() {
 
           {visible.length === 0 ? (
             <p className="rounded-xl bg-surface-container-low px-4 py-6 text-center text-sm text-on-surface-variant">
-              {summary.counts.total === 0 ? 'No budget items yet. Add your bills and spending pools.' : 'Nothing here.'}
+              {summary.counts.total === 0 ? 'No budget items yet. Add your bills and budgets.' : 'Nothing here.'}
             </p>
           ) : (
-            <div className="space-y-3">
-              {visible.map((s) => (
+            <div className="divide-y divide-surface-container overflow-hidden rounded-xl bg-surface-container-low shadow-soft">
+              {visible.map((s, i) => (
                 <BudgetItemCard
                   key={s.item.id}
+                  index={i}
                   summary={s}
                   account={s.item.accountId ? accountById.get(s.item.accountId) : undefined}
                   today={today}

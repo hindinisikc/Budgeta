@@ -95,7 +95,7 @@ export function LabelEditorSheet({ kind, open, label, icons, onClose, onRemoved 
         />
 
         <fieldset className="space-y-1.5">
-          <legend className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Icon</legend>
+          <legend className="px-1 pb-1.5 text-sm font-medium text-on-surface-variant">Icon</legend>
           <div className="grid grid-cols-6 gap-2">
             {options.map((opt) => (
               <button

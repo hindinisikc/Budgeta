@@ -15,7 +15,7 @@ export function ReportCard({ title, subtitle, table, children }: ReportCardProps
     <section className="min-w-0 space-y-4 rounded-xl bg-surface-container-low p-4 shadow-soft sm:p-5">
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="font-headline text-base font-bold">{title}</h3>
+          <h3 className="text-base font-semibold">{title}</h3>
           {subtitle && <p className="text-xs text-on-surface-variant">{subtitle}</p>}
         </div>
         {table && (

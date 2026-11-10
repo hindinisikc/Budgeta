@@ -8,6 +8,7 @@ import { formatPeso, sum } from '../../domain/money';
 import type { Transaction } from '../../domain/types';
 import { useUi } from '../../state/ui';
 import { labelOptions } from '../budget/helpers';
+import { SpendingBreakdown } from './SpendingBreakdown';
 import { TransactionEditorSheet } from './TransactionEditorSheet';
 import { TransactionRow, categoryOf as sharedCategoryOf } from './TransactionRow';
 
@@ -84,6 +85,13 @@ export function HistoryView() {
 
   return (
     <>
+      <SpendingBreakdown
+        records={records}
+        lookups={lookups}
+        selected={filters.categoryId}
+        onSelect={(categoryId) => setFilters((s) => ({ ...s, categoryId }))}
+      />
+
       <div className="space-y-3">
         <div className="relative">
           <Icon name="search" size={20} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant" />
@@ -119,7 +127,7 @@ export function HistoryView() {
           </button>
         </div>
         {activeFilters.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex animate-reveal flex-wrap gap-2">
             {activeFilters.map((f) => (
               <button key={f.key} type="button" onClick={() => setFilters((s) => ({ ...s, [f.key]: '' }))} className="inline-flex min-h-9 items-center gap-1 rounded-full bg-primary-fixed px-3 text-sm font-semibold text-on-primary-fixed">
                 {f.label} <Icon name="close" size={16} />
@@ -151,9 +159,8 @@ export function HistoryView() {
         <div className="space-y-4">
           {groups.map((g) => (
             <section key={g.date} className="space-y-1.5">
-              <h3 className="flex items-center justify-between px-1 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                <span>{dayLabel(g.date, today)}</span>
-                <span className="normal-case tracking-normal">{formatShortDate(g.date)}</span>
+              <h3 className="px-1 text-sm font-medium text-on-surface-variant">
+                {dayLabel(g.date, today).includes(formatShortDate(g.date)) ? dayLabel(g.date, today) : `${dayLabel(g.date, today)} · ${formatShortDate(g.date)}`}
               </h3>
               <ul className="divide-y divide-surface-container overflow-hidden rounded-xl bg-surface-container-low shadow-soft">
                 {g.txs.map((t) => (

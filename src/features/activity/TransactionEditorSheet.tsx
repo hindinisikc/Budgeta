@@ -116,7 +116,7 @@ export function TransactionEditorSheet({ open, onClose, tx, monthId, lookups, go
               value={link}
               onChange={(e) => setLink(e.target.value)}
               options={[
-                ...items.map((i) => ({ value: i.id, label: `${i.name}${i.settled ? ' (settled)' : ''}` })),
+                ...items.map((i) => ({ value: i.id, label: `${i.name}${i.settled ? ' (done)' : ''}` })),
                 { value: NONE, label: 'Unplanned (not in budget)' },
               ]}
             />

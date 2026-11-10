@@ -11,8 +11,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants = {
-  primary: 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant shadow-fab',
-  secondary: 'bg-surface text-primary border border-outline-variant hover:bg-surface-container-low',
+  primary: 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant',
+  secondary: 'bg-surface-container-low text-primary ring-1 ring-inset ring-outline-variant hover:bg-surface-container',
   tonal: 'bg-primary-fixed text-on-primary-fixed hover:bg-primary-fixed-dim',
   ghost: 'text-primary hover:bg-surface-container',
   danger: 'text-error hover:bg-error-container/50',
@@ -36,7 +36,7 @@ export function Button({
     <button
       type={type}
       className={cx(
-        'inline-flex items-center justify-center rounded-xl font-bold transition-all active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50',
+        'inline-flex items-center justify-center rounded-xl font-semibold transition-all active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50',
         variants[variant],
         sizes[size],
         fullWidth && 'w-full',

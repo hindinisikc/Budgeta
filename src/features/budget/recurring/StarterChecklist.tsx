@@ -26,13 +26,13 @@ export function StarterChecklist({ onSkip }: { onSkip: () => void }) {
   return (
     <section className="space-y-4 rounded-xl bg-surface-container-low p-4 shadow-soft sm:p-5">
       <div>
-        <h3 className="font-headline text-lg font-bold">Quick start</h3>
+        <h3 className="text-lg font-semibold">Quick start</h3>
         <p className="text-sm text-on-surface-variant">Tick what you have every month and enter your usual amount. You can rename or adjust anything later.</p>
       </div>
 
       {STARTER_ITEMS.map((g) => (
         <fieldset key={g.group} className="space-y-1.5">
-          <legend className="px-1 pb-1 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">{g.group}</legend>
+          <legend className="px-1 pb-1 text-sm font-medium text-on-surface-variant">{g.group}</legend>
           {g.items.map((s) => {
             const on = !!checked[s.key];
             return (

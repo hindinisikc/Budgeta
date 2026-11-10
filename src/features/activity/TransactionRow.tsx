@@ -1,4 +1,4 @@
-import { Badge, IconChip, cx, toIconName, type IconName, type Tone } from '../../components/ui';
+import { IconChip, cx, toIconName, type IconName, type Tone } from '../../components/ui';
 import type { Lookups } from '../../db/hooks';
 import { formatPeso } from '../../domain/money';
 import type { BudgetItem, Goal, IncomeItem, Transaction } from '../../domain/types';
@@ -20,14 +20,14 @@ function describe(t: Transaction, ctx: TxContext): { icon: IconName; tone: Tone;
   const account = t.accountId ? accountById.get(t.accountId)?.name : undefined;
   // Skip parts that just repeat the description (e.g. a payment named after its budget line).
   const same = (p: string | undefined) => !!p && p.trim().toLowerCase() === t.description.trim().toLowerCase();
-  const join = (...parts: Array<string | undefined>) => parts.filter((p) => p && !same(p)).join(' • ');
+  const join = (...parts: Array<string | undefined>) => parts.filter((p) => p && !same(p)).join(' · ');
   switch (t.type) {
     case 'expense': {
       const cat = categoryById.get(categoryOf(t, ctx.itemById) ?? '');
-      // Linked: show the budget line. Unplanned already has a badge, so show its category instead.
+      // Linked: show the budget line. Unplanned: say so, then its category.
       const line = t.budgetItemId ? ctx.itemById.get(t.budgetItemId)?.name : undefined;
       const where = line && !same(line) ? line : cat?.name;
-      return { icon: toIconName(cat?.icon ?? 'category'), tone: t.budgetItemId ? 'primary' : 'tertiary', sub: join(account, where), sign: '-', amountTone: '' };
+      return { icon: toIconName(cat?.icon ?? 'category'), tone: t.budgetItemId ? 'primary' : 'tertiary', sub: join(t.budgetItemId ? undefined : 'Unplanned', account, where), sign: '−', amountTone: '' };
     }
     case 'income':
       return { icon: 'payments', tone: 'primary', sub: join(account, t.incomeItemId ? ctx.incomeById.get(t.incomeItemId)?.name : 'Extra income'), sign: '+', amountTone: 'text-primary' };
@@ -48,22 +48,19 @@ interface TransactionRowProps {
 
 export function TransactionRow({ tx, ctx, suffix, onClick }: TransactionRowProps) {
   const d = describe(tx, ctx);
-  const sub = [d.sub, suffix].filter(Boolean).join(' • ');
+  const sub = [d.sub, suffix].filter(Boolean).join(' · ');
   return (
-    <button type="button" onClick={onClick} className="flex w-full items-center justify-between gap-3 p-3.5 text-left transition-colors hover:bg-surface-container/40">
+    <button type="button" onClick={onClick} className="flex w-full animate-item-in items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-container/60 active:bg-surface-container">
       <span className="flex min-w-0 items-center gap-3">
         <IconChip icon={d.icon} tone={d.tone} />
         <span className="min-w-0">
-          <span className="block truncate font-headline text-sm font-semibold">{tx.description || '(no description)'}</span>
-          <span className="flex min-w-0 items-center gap-1.5 text-xs text-on-surface-variant">
-            {tx.type === 'expense' && !tx.budgetItemId && <Badge tone="tertiary" className="shrink-0 py-0">Unplanned</Badge>}
-            <span className="truncate">{sub || ' '}</span>
-          </span>
+          <span className="block truncate font-medium">{tx.description || '(no description)'}</span>
+          <span className="block truncate text-sm text-on-surface-variant">{sub || ' '}</span>
         </span>
       </span>
-      <span className={cx('shrink-0 font-headline text-sm font-bold', d.amountTone)}>
+      <span className={cx('shrink-0 font-semibold', d.amountTone)}>
         {d.sign}
-        {formatPeso(tx.amount, { cents: 'always' })}
+        {formatPeso(tx.amount)}
       </span>
     </button>
   );

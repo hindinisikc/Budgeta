@@ -19,7 +19,8 @@ export function AppShell() {
       <SideNav />
       <Header />
       <main className="pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] lg:pb-10 lg:pl-64">
-        <div className="mx-auto w-full max-w-2xl space-y-5 px-4 pt-2 lg:max-w-5xl lg:px-8 lg:pt-6">
+        {/* Keyed by screen so each tab change fades the new screen in. */}
+        <div key={pathname} className="mx-auto w-full max-w-2xl animate-page-in space-y-5 px-4 pt-2 lg:max-w-5xl lg:px-8 lg:pt-6">
           <Outlet />
         </div>
       </main>

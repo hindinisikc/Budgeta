@@ -59,8 +59,8 @@ export function TransferSheet({ open, onClose, monthId, due, accounts }: Transfe
         <ul className="divide-y divide-surface-container overflow-hidden rounded-xl bg-surface-container-low">
           {due.map(({ goal, amount }) => (
             <li key={goal.id} className="flex items-center justify-between px-4 py-3">
-              <span className="font-headline text-sm font-semibold">{goal.name}</span>
-              <span className="font-headline text-sm font-bold">{formatPeso(amount)}</span>
+              <span className="text-sm font-semibold">{goal.name}</span>
+              <span className="text-sm font-semibold">{formatPeso(amount)}</span>
             </li>
           ))}
         </ul>

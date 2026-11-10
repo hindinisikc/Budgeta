@@ -9,7 +9,7 @@ export function Toast() {
       {toast && (
         <p
           key={toast.id}
-          className="flex animate-sheet-up items-center gap-2 rounded-xl bg-inverse-surface px-4 py-3 text-sm font-semibold text-inverse-on-surface shadow-soft"
+          className="flex animate-toast-in items-center gap-2 rounded-xl bg-inverse-surface px-4 py-3 text-sm font-semibold text-inverse-on-surface shadow-soft"
         >
           <Icon name="check_circle" size={18} className="text-inverse-primary" />
           {toast.message}

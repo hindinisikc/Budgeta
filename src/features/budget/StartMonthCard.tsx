@@ -22,7 +22,7 @@ export function StartMonthCard({ monthId, templates }: StartMonthCardProps) {
   const income = active.filter((t) => t.kind === 'income').length;
   const parts = [
     bills && `${bills} bill${bills === 1 ? '' : 's'}`,
-    pools && `${pools} spending pool${pools === 1 ? '' : 's'}`,
+    pools && `${pools} budget${pools === 1 ? '' : 's'}`,
     income && `${income} income line${income === 1 ? '' : 's'}`,
   ].filter(Boolean);
 

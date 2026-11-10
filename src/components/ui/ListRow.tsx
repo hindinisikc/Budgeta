@@ -18,13 +18,13 @@ export function ListRow({ leading, title, subtitle, trailing, trailingSub, onCli
       <div className="flex min-w-0 items-center gap-3">
         {leading}
         <div className="min-w-0">
-          <div className="truncate font-headline text-sm font-semibold">{title}</div>
+          <div className="truncate text-sm font-semibold">{title}</div>
           {subtitle && <div className="truncate text-xs text-on-surface-variant">{subtitle}</div>}
         </div>
       </div>
       {(trailing || trailingSub) && (
         <div className="shrink-0 text-right">
-          {trailing && <div className="font-headline text-sm font-bold">{trailing}</div>}
+          {trailing && <div className="text-sm font-semibold">{trailing}</div>}
           {trailingSub && <div className="text-xs text-on-surface-variant">{trailingSub}</div>}
         </div>
       )}

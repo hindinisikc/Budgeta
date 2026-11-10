@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { fillTone, type Tone } from './tones';
 import { cx } from './cx';
 
@@ -12,6 +13,12 @@ interface ProgressBarProps {
 
 export function ProgressBar({ value, tone = 'primary', size = 'md', label, className }: ProgressBarProps) {
   const pct = Math.round(clamp01(value) * 100);
+  // Starts empty and grows to its value on first paint; later changes glide via the width transition.
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setShown(pct));
+    return () => cancelAnimationFrame(frame);
+  }, [pct]);
   return (
     <div
       role="progressbar"
@@ -21,7 +28,7 @@ export function ProgressBar({ value, tone = 'primary', size = 'md', label, class
       aria-valuenow={pct}
       className={cx('w-full overflow-hidden rounded-full bg-surface-variant/70', size === 'md' ? 'h-2' : 'h-1.5', className)}
     >
-      <div className={cx('h-full rounded-full transition-[width] duration-500', fillTone[tone])} style={{ width: `${pct}%` }} />
+      <div className={cx('h-full rounded-full transition-[width,background-color] duration-700 ease-out', fillTone[tone])} style={{ width: `${shown}%` }} />
     </div>
   );
 }

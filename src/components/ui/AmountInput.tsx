@@ -23,11 +23,11 @@ export function AmountInput({ label, value, onChange, size = 'md', hint, autoFoc
       </label>
       <div
         className={cx(
-          'flex items-center rounded-xl bg-surface-container-low px-4 transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary',
+          'flex items-center rounded-xl bg-surface-container-low px-4 ring-1 ring-inset ring-outline-variant/70 transition-all focus-within:ring-2 focus-within:ring-primary',
           large ? 'min-h-16' : 'min-h-12',
         )}
       >
-        <span className={cx('font-headline font-bold text-on-surface-variant', large ? 'text-2xl' : 'text-lg')}>₱</span>
+        <span className={cx('font-semibold text-on-surface-variant', large ? 'text-2xl' : 'text-lg')}>₱</span>
         <input
           id={id}
           inputMode="decimal"
@@ -37,7 +37,7 @@ export function AmountInput({ label, value, onChange, size = 'md', hint, autoFoc
           autoFocus={autoFocus}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.,]/g, ''))}
           className={cx(
-            'w-full min-w-0 self-stretch bg-transparent pl-2 font-headline font-bold text-on-surface placeholder:text-outline focus:outline-none',
+            'w-full min-w-0 self-stretch bg-transparent pl-2 font-semibold text-on-surface placeholder:text-outline focus:outline-none',
             large ? 'text-3xl' : 'text-lg',
           )}
         />

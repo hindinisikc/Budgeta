@@ -91,7 +91,7 @@ export function TemplateEditorSheet({ open, onClose, template, defaultKind, cate
           onChange={setKind}
           options={[
             { value: 'bill', label: 'Bill' },
-            { value: 'flexible', label: 'Spending pool' },
+            { value: 'flexible', label: 'Budget' },
             { value: 'income', label: 'Income' },
           ]}
         />

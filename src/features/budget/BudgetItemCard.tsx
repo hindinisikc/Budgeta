@@ -1,4 +1,5 @@
-import { Badge, Icon, ProgressBar, cx, type Tone } from '../../components/ui';
+import { useEffect, useRef } from 'react';
+import { Icon, ProgressBar, cx } from '../../components/ui';
 import type { ItemSummary } from '../../domain/calc';
 import { formatShortDate, type DateStr } from '../../domain/dates';
 import { formatPeso } from '../../domain/money';
@@ -12,28 +13,30 @@ interface BudgetItemCardProps {
   dueSoonDays: number;
   /** Checkbox: record a payment (open items) or reopen (settled items). */
   onCheck: () => void;
-  /** Card body: open the item's details. */
+  /** Row body: open the item's details. */
   onOpen: () => void;
+  /** Position in the list, for a slight cascade when the list appears. */
+  index?: number;
 }
 
-/** One budget line: checkbox, name, one status, amount. Details live in the sheet it opens. */
-export function BudgetItemCard({ summary, account, today, dueSoonDays, onCheck, onOpen }: BudgetItemCardProps) {
+/** One budget line as a list row: checkbox, name, one line of detail, amount. Details live in the sheet it opens. */
+export function BudgetItemCard({ summary, account, today, dueSoonDays, onCheck, onOpen, index = 0 }: BudgetItemCardProps) {
   const { item, paid, state, overspent, underspent } = summary;
   const settled = state === 'settled';
-  const due = dueBadge(item, today, dueSoonDays);
+  // Pop the tick only when the item becomes paid, not every time the list appears.
+  const wasSettled = useRef(settled);
+  const justSettled = settled && !wasSettled.current;
+  useEffect(() => {
+    wasSettled.current = settled;
+  }, [settled]);
+  // "Due in 2 days" replaces the plain due date when it's close; no separate pill.
+  const due = !settled ? dueBadge(item, today, dueSoonDays) : null;
 
-  // Exactly one status badge, most important first.
-  const badge: { text: string; tone: Tone } | null = settled
-    ? { text: 'Paid', tone: 'primary' }
-    : due
-      ? due
-      : state === 'partial'
-        ? { text: 'In progress', tone: 'tertiary' }
-        : item.autoPay
-          ? { text: 'Auto-debit', tone: 'neutral' }
-          : null;
-
-  const subtitle = [item.kind === 'bill' && item.dueDate ? `Due ${formatShortDate(item.dueDate)}` : item.kind === 'flexible' ? 'Spending pool' : '', account?.name]
+  const subtitle = [
+    due ? due.text : item.kind === 'bill' && item.dueDate ? `Due ${formatShortDate(item.dueDate)}` : item.kind === 'flexible' ? 'Budget' : '',
+    item.autoPay && !settled ? 'Auto-debit' : '',
+    account?.name,
+  ]
     .filter(Boolean)
     .join(' · ');
 
@@ -42,45 +45,46 @@ export function BudgetItemCard({ summary, account, today, dueSoonDays, onCheck, 
       ? { text: `Over by ${formatPeso(overspent)}`, cls: 'text-error' }
       : underspent > 0
         ? { text: `Saved ${formatPeso(underspent)}`, cls: 'text-primary' }
-        : { text: `of ${formatPeso(item.planned)}`, cls: 'text-on-surface-variant' }
+        : null
     : paid > 0
       ? { text: `of ${formatPeso(item.planned)}`, cls: overspent > 0 ? 'text-error' : 'text-on-surface-variant' }
-      : { text: 'planned', cls: 'text-on-surface-variant' };
+      : null;
 
   return (
-    <article className="flex items-start gap-3 rounded-xl bg-surface-container-low p-4 shadow-soft">
+    <article
+      className="flex animate-item-in items-center gap-1 py-1 pl-2 pr-4 transition-colors active:bg-surface-container/60"
+      style={{ animationDelay: `${Math.min(index, 12) * 25}ms` }}
+    >
       <button
         type="button"
         onClick={onCheck}
         aria-label={settled ? `Reopen ${item.name}` : `Record payment for ${item.name}`}
-        className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center"
+        className="flex h-11 w-11 shrink-0 items-center justify-center"
       >
         <span
           className={cx(
-            'flex h-7 w-7 items-center justify-center rounded-md transition-colors',
-            settled ? 'bg-primary text-on-primary' : 'border-2 border-outline-variant bg-surface-container',
+            'flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 active:scale-90',
+            settled ? 'bg-primary text-on-primary' : 'border-2 border-outline-variant',
+            justSettled && 'animate-pop',
           )}
         >
-          {settled && <Icon name="check" size={20} />}
+          {settled && <Icon name="check" size={16} />}
         </span>
       </button>
 
-      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left" aria-label={`${item.name} details`}>
-        <span className="flex items-start justify-between gap-3">
+      <button type="button" onClick={onOpen} className="min-w-0 flex-1 py-2 text-left" aria-label={`${item.name} details`}>
+        <span className="flex items-center justify-between gap-3">
           <span className="min-w-0">
-            <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span className={cx('font-headline text-base font-bold leading-snug', settled && 'text-on-surface-variant line-through')}>{item.name}</span>
-              {badge && <Badge tone={badge.tone}>{badge.text}</Badge>}
-            </span>
-            {subtitle && <span className="mt-0.5 block truncate text-xs text-on-surface-variant">{subtitle}</span>}
+            <span className={cx('block truncate font-medium transition-colors duration-300', settled && 'text-on-surface-variant line-through')}>{item.name}</span>
+            {subtitle && <span className={cx('block truncate text-sm', due ? 'font-medium text-error' : 'text-on-surface-variant')}>{subtitle}</span>}
           </span>
           <span className="shrink-0 text-right">
-            <span className={cx('block font-headline text-base font-bold', settled && 'text-primary')}>{formatPeso(paid > 0 || settled ? paid : item.planned)}</span>
-            <span className={cx('block text-xs', amountNote.cls)}>{amountNote.text}</span>
+            <span className={cx('block font-semibold', settled && 'text-on-surface-variant')}>{formatPeso(paid > 0 || settled ? paid : item.planned)}</span>
+            {amountNote && <span className={cx('block text-sm', amountNote.cls)}>{amountNote.text}</span>}
           </span>
         </span>
         {state === 'partial' && item.kind === 'flexible' && (
-          <ProgressBar value={summary.progress} tone={overspent > 0 ? 'error' : 'primary'} size="sm" className="mt-2.5" label={`${item.name} progress`} />
+          <ProgressBar value={summary.progress} tone={overspent > 0 ? 'error' : 'primary'} size="sm" className="mt-2" label={`${item.name} progress`} />
         )}
       </button>
     </article>

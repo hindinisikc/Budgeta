@@ -34,7 +34,7 @@ export default function UiGallery() {
               ]}
             >
               <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Pace</span>
-              <span className="font-headline text-sm font-bold text-primary">Good</span>
+              <span className="text-sm font-semibold text-primary">Good</span>
             </RingChart>
             <div className="w-full flex-1 space-y-2.5">
               <div className="flex items-baseline justify-between text-xs">
@@ -45,11 +45,11 @@ export default function UiGallery() {
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <div className="rounded-lg bg-surface-container p-2.5">
                   <span className="text-xs text-on-surface-variant">Spent to date</span>
-                  <p className="font-headline text-base font-bold">₱38,420</p>
+                  <p className="text-base font-semibold">₱38,420</p>
                 </div>
                 <div className="rounded-lg bg-surface-container p-2.5">
                   <span className="text-xs text-on-surface-variant">Remaining</span>
-                  <p className="font-headline text-base font-bold">₱25,580</p>
+                  <p className="text-base font-semibold">₱25,580</p>
                 </div>
               </div>
             </div>
@@ -67,11 +67,11 @@ export default function UiGallery() {
               <div className="flex items-center gap-2">
                 <IconChip icon="account_balance" look="soft" size="sm" />
                 <div>
-                  <h3 className="font-headline text-sm font-semibold">Total Available Funds</h3>
+                  <h3 className="text-sm font-semibold">Total Available Funds</h3>
                   <p className="text-xs text-on-surface-variant">Payroll &amp; secondary inflows</p>
                 </div>
               </div>
-              <span className="font-headline text-base font-bold">₱85,000</span>
+              <span className="text-base font-semibold">₱85,000</span>
             </div>
             <SegmentedBar
               segments={[

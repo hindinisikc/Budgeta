@@ -15,7 +15,7 @@ export function EmptyState({ icon = 'potted_plant', title, message, action }: Em
       <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary-fixed/60 text-primary">
         <Icon name={icon} size={28} />
       </span>
-      <h3 className="font-headline text-lg font-bold">{title}</h3>
+      <h3 className="text-lg font-semibold">{title}</h3>
       {message && <p className="mt-1 max-w-sm text-sm text-on-surface-variant">{message}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>

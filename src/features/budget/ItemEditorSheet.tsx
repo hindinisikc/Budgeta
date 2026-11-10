@@ -92,7 +92,7 @@ export function ItemEditorSheet({ open, onClose, monthId, item, payments, catego
           onChange={setKind}
           options={[
             { value: 'bill', label: 'Bill' },
-            { value: 'flexible', label: 'Spending pool' },
+            { value: 'flexible', label: 'Budget' },
           ]}
         />
         <p className="-mt-3 px-1 text-xs text-on-surface-variant">

@@ -38,7 +38,7 @@ export const STARTER_ITEMS: Array<{ group: string; items: StarterItem[] }> = [
     ],
   },
   {
-    group: 'Spending pools',
+    group: 'Budgets',
     items: [
       { key: 'groceries', kind: 'flexible', name: 'Groceries', categoryName: 'Groceries', dueDay: null },
       { key: 'transport', kind: 'flexible', name: 'Transport', categoryName: 'Transit', dueDay: null },

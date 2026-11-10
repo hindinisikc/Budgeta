@@ -1,19 +1,17 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link } from 'react-router';
-import { Button, Icon, PageHeading, SectionHeader, cx } from '../../components/ui';
+import { AnimatedPeso, Button, Icon, PageHeading, SectionHeader, cx } from '../../components/ui';
 import { db } from '../../db/db';
 import { useLookups, useMonthRecords } from '../../db/hooks';
 import { contribute, withdraw } from '../../db/repo/goals';
 import { goalBalances, summarizeMonth } from '../../domain/calc';
 import { formatMonthLabel, monthName, parseMonthId } from '../../domain/dates';
 import { formatPeso, sum } from '../../domain/money';
-import { suggestedSavings } from '../../domain/suggestions';
 import { useUi } from '../../state/ui';
 import { RecordMoneySheet } from '../budget/RecordMoneySheet';
 import { GoalCard } from './GoalCard';
 import { GoalEditorSheet } from './GoalEditorSheet';
-import { MarginSimulator } from './MarginSimulator';
 import { TransferSheet } from './TransferSheet';
 
 type SheetState =
@@ -30,7 +28,6 @@ export function SavingsPage() {
   const savingsTx = useLiveQuery(() => db.transactions.where('type').anyOf('contribution', 'withdrawal').toArray(), []);
   const [sheet, setSheet] = useState<SheetState>({ kind: 'none' });
   const [last, setLast] = useState<SheetState>({ kind: 'none' });
-  const [showSim, setShowSim] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const open = (s: SheetState) => {
     setSheet(s);
@@ -89,41 +86,19 @@ export function SavingsPage() {
       <div className="grid items-start gap-5 lg:grid-cols-2">
         <div className="min-w-0 space-y-3">
           {/* The one card that matters: what's free to spend after bills and savings. */}
-          <section className={cx('relative overflow-hidden rounded-xl p-5 shadow-soft', over ? 'bg-error-container' : 'bg-primary-fixed')}>
-            <span aria-hidden className="pointer-events-none absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-primary-container/30" />
-            <div className="relative flex items-end justify-between gap-3">
+          <section className="rounded-xl bg-surface-container-low p-5 shadow-soft">
+            <div className="flex items-end justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-primary-fixed-variant">{over ? 'Over plan by' : 'Safe to spend'}</p>
-                <p className="font-headline text-4xl font-bold leading-tight text-on-primary-fixed">{formatPeso(Math.abs(summary.margin))}</p>
+                <p className="text-sm font-medium text-on-surface-variant">Saving this month</p>
+                <p className="text-4xl font-bold tracking-tight"><AnimatedPeso value={summary.savingsTarget} fromZero /></p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-on-primary-fixed-variant">Saving this month</p>
-                <p className="font-headline text-xl font-bold text-on-primary-fixed">{formatPeso(summary.savingsTarget)}</p>
+                <p className="text-sm text-on-surface-variant">{over ? 'Over plan by' : 'Safe to spend'}</p>
+                <p className={cx('text-lg font-semibold', over && 'text-error')}><AnimatedPeso value={Math.abs(summary.margin)} /></p>
               </div>
             </div>
-            <p className="relative mt-2 text-sm text-on-primary-fixed-variant">
-              {over ? 'More is planned or spent than you have this month.' : 'What is left after your bills, spending pools and savings.'}
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowSim((s) => !s)}
-              aria-expanded={showSim}
-              className="relative mt-2 inline-flex min-h-10 items-center gap-1 text-sm font-bold text-on-primary-fixed underline-offset-2 hover:underline"
-            >
-              <Icon name="tune" size={16} /> {showSim ? 'Hide' : 'Try a different savings amount'}
-            </button>
+            {over && <p className="mt-2 text-sm text-error">More is planned or spent than you have this month.</p>}
           </section>
-          {summary.plannedIncome > 0 && (
-            <p className="flex items-start gap-2 px-1 text-sm text-on-surface-variant">
-              <Icon name="info" size={18} className="mt-0.5 shrink-0" />
-              <span>
-                {summary.savingsTarget >= suggestedSavings(summary.plannedIncome)
-                  ? `You're saving at least 20% of income — the common 50/30/20 guide. Nice.`
-                  : <>A common guide is saving 20% of income (<strong className="text-on-surface">{formatPeso(suggestedSavings(summary.plannedIncome))}</strong>). You're planning {formatPeso(summary.savingsTarget)}.</>}
-              </span>
-            </p>
-          )}
-          {showSim && <MarginSimulator savingsTarget={summary.savingsTarget} margin={summary.margin} />}
         </div>
 
         <div className="min-w-0 space-y-3">
@@ -158,9 +133,9 @@ export function SavingsPage() {
                 className="inline-flex min-h-11 items-center gap-1 px-1 text-sm font-semibold text-on-surface-variant"
               >
                 Completed ({completedGoals.length})
-                <Icon name="keyboard_arrow_down" size={18} className={showCompleted ? 'rotate-180' : ''} />
+                <Icon name="keyboard_arrow_down" size={18} className={cx('transition-transform duration-200', showCompleted && 'rotate-180')} />
               </button>
-              {showCompleted && <div className="space-y-3">{completedGoals.map(goalCard)}</div>}
+              {showCompleted && <div className="animate-reveal space-y-3">{completedGoals.map(goalCard)}</div>}
             </div>
           )}
         </div>

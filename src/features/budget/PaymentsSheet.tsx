@@ -29,10 +29,10 @@ export function PaymentsSheet({ open, onClose, summary, payments, accountById, o
     <Sheet open={open} onClose={onClose} title="Details">
       <div className="space-y-4 pt-1">
         <div className="rounded-xl bg-surface-container-low px-4 py-3">
-          <p className="font-headline text-lg font-bold">{item.name}</p>
+          <p className="text-lg font-semibold">{item.name}</p>
           <p className="text-sm text-on-surface-variant">
             Planned {formatPeso(item.planned)} · Paid {formatPeso(summary.paid)}
-            {item.settled ? ' · Settled' : summary.remaining > 0 ? ` · ${formatPeso(summary.remaining)} left` : ''}
+            {item.settled ? ' · Done' : summary.remaining > 0 ? ` · ${formatPeso(summary.remaining)} left` : ''}
           </p>
         </div>
 
@@ -43,7 +43,7 @@ export function PaymentsSheet({ open, onClose, summary, payments, accountById, o
             {payments.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
-                  <p className="font-headline text-sm font-bold">{formatPeso(p.amount, { cents: 'always' })}</p>
+                  <p className="text-sm font-semibold">{formatPeso(p.amount, { cents: 'always' })}</p>
                   <p className="truncate text-xs text-on-surface-variant">
                     {formatShortDate(p.date)}
                     {p.accountId && accountById.get(p.accountId) ? ` · ${accountById.get(p.accountId)!.name}` : ''}
@@ -78,7 +78,7 @@ export function PaymentsSheet({ open, onClose, summary, payments, accountById, o
           </Button>
           {(item.kind === 'flexible' || summary.paid < item.planned) && (
             <Button variant="tonal" icon={item.settled ? 'lock_open' : 'check'} disabled={busy} onClick={() => void run(() => setItemSettled(item.id, !item.settled))}>
-              {item.settled ? 'Reopen' : 'Mark settled'}
+              {item.settled ? 'Reopen' : 'Mark as done'}
             </Button>
           )}
         </div>

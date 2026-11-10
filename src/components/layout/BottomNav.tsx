@@ -10,8 +10,8 @@ function Tab({ item }: { item: NavItem }) {
       end={item.to === '/'}
       className={({ isActive }) =>
         cx(
-          'flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 transition-colors',
-          isActive ? 'font-bold text-primary' : 'text-on-surface-variant hover:text-on-surface',
+          'flex min-h-11 flex-1 flex-col items-center justify-center gap-1 transition-all duration-150 active:scale-95',
+          isActive ? 'font-semibold text-primary' : 'text-on-surface-variant hover:text-on-surface',
         )
       }
     >
@@ -26,7 +26,7 @@ export function BottomNav() {
   const { openQuickAdd } = useUi();
   const [first, second, third, fourth] = NAV_ITEMS;
   return (
-    <nav aria-label="Main" className="pb-safe fixed inset-x-0 bottom-0 z-40 bg-surface/90 shadow-bar-top backdrop-blur-xl lg:hidden">
+    <nav aria-label="Main" className="pb-safe fixed inset-x-0 bottom-0 z-40 bg-surface-container-lowest/90 shadow-bar-top backdrop-blur-xl lg:hidden">
       <div className="mx-auto flex h-16 max-w-2xl items-center justify-around px-2">
         {first && <Tab item={first} />}
         {second && <Tab item={second} />}
